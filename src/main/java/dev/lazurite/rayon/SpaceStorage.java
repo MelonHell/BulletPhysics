@@ -1,9 +1,10 @@
 package dev.lazurite.rayon;
 
-import dev.lazurite.rayon.api.event.collision.PhysicsSpaceEvents;
+import dev.lazurite.rayon.api.event.physicsSpace.PhysicsSpaceInitEvent;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.event.ServerEventHandler;
 import net.minecraft.world.level.Level;
+import org.bukkit.Bukkit;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +17,7 @@ public class SpaceStorage {
         if (minecraftSpace == null) {
             final var space = new MinecraftSpace(ServerEventHandler.getThread(), level);
             set(level, space);
-            PhysicsSpaceEvents.INIT.invoke(space);
+            Bukkit.getPluginManager().callEvent(new PhysicsSpaceInitEvent(space));
             return space;
         }
         return minecraftSpace;

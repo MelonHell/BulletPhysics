@@ -3,9 +3,9 @@ package dev.lazurite.rayon.impl.bullet.collision.space.generator;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.Triangle;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
-import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import net.minecraft.core.BlockPos;
 

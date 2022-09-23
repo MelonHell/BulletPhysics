@@ -8,8 +8,11 @@ import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.SpaceStorage;
-import dev.lazurite.rayon.api.event.collision.ElementCollisionEvents;
-import dev.lazurite.rayon.api.event.collision.PhysicsSpaceEvents;
+import dev.lazurite.rayon.api.event.elementCollision.BlockCollisionEvent;
+import dev.lazurite.rayon.api.event.elementCollision.ElementCollisionEvent;
+import dev.lazurite.rayon.api.event.physicsSpace.PhysicsSpaceElementAddedEvent;
+import dev.lazurite.rayon.api.event.physicsSpace.PhysicsSpaceElementRemovedEvent;
+import dev.lazurite.rayon.api.event.physicsSpace.PhysicsSpaceStepEvent;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.TerrainRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.cache.ChunkCache;
@@ -18,6 +21,7 @@ import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
+import org.bukkit.Bukkit;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -33,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * next tick. This really only happens if you are dealing with an ungodly amount of rigid bodies or your computer is slo.
  *
  * @see PhysicsThread
- * @see PhysicsSpaceEvents
+ * see PhysicsSpaceEvents
  */
 public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
     private final CompletableFuture[] futures = new CompletableFuture[3];
@@ -79,7 +83,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     /**
      * This method performs the following steps:
      * <ul>
-     *     <li>Fires world step events in {@link PhysicsSpaceEvents}.</li>
+     *     <li>Fires world step events in {link PhysicsSpaceEvents}.</li>
      *     <li>Steps {@link ElementRigidBody}s.</li>
      *     <li>Steps the simulation asynchronously.</li>
      *     <li>Triggers collision events.</li>
@@ -89,7 +93,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      * (no {@link PhysicsRigidBody}s) or when the game is paused.
      *
      * @see TerrainGenerator
-     * @see PhysicsSpaceEvents
+     * see PhysicsSpaceEvents
      */
     public void step() {
         MinecraftSpace.get(level).getRigidBodiesByClass(ElementRigidBody.class).forEach(ElementRigidBody::updateFrame);
@@ -106,7 +110,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
                     this.distributeEvents();
 
                     /* World Step Event */
-                    PhysicsSpaceEvents.STEP.invoke(this);
+                    Bukkit.getPluginManager().callEvent(new PhysicsSpaceStepEvent(this));
 
                     /* Step the Simulation */
                     this.update(1 / 60f);
@@ -122,7 +126,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         if (!collisionObject.isInWorld()) {
             if (collisionObject instanceof ElementRigidBody rigidBody) {
 
-                PhysicsSpaceEvents.ELEMENT_ADDED.invoke(this, rigidBody);
+                Bukkit.getPluginManager().callEvent(new PhysicsSpaceElementAddedEvent(this, rigidBody));
 
                 if (!rigidBody.isInWorld()) {
                     rigidBody.activate();
@@ -146,7 +150,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
             super.removeCollisionObject(collisionObject);
 
             if (collisionObject instanceof ElementRigidBody rigidBody) {
-                PhysicsSpaceEvents.ELEMENT_REMOVED.invoke(this, rigidBody);
+                Bukkit.getPluginManager().callEvent(new PhysicsSpaceElementRemovedEvent(this, rigidBody));
             } else if (collisionObject instanceof TerrainRigidBody terrain) {
                 this.removeTerrainObjectAt(terrain.getBlockPos());
             }
@@ -230,15 +234,15 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
         /* Element on Element */
         if (event.getObjectA() instanceof ElementRigidBody rigidBodyA && event.getObjectB() instanceof ElementRigidBody rigidBodyB) {
-            ElementCollisionEvents.ELEMENT_COLLISION.invoke(rigidBodyA.getElement(), rigidBodyB.getElement(), impulse);
+            Bukkit.getPluginManager().callEvent(new ElementCollisionEvent(rigidBodyA.getElement(), rigidBodyB.getElement(), impulse));
         }
         /* Block on Element */
         else if (event.getObjectA() instanceof TerrainRigidBody terrain && event.getObjectB() instanceof ElementRigidBody rigidBody) {
-            ElementCollisionEvents.BLOCK_COLLISION.invoke(rigidBody.getElement(), terrain, impulse);
+            Bukkit.getPluginManager().callEvent(new BlockCollisionEvent(rigidBody.getElement(), terrain, impulse));
         }
         /* Element on Block */
         else if (event.getObjectA() instanceof ElementRigidBody rigidBody && event.getObjectB() instanceof TerrainRigidBody terrain) {
-            ElementCollisionEvents.BLOCK_COLLISION.invoke(rigidBody.getElement(), terrain, impulse);
+            Bukkit.getPluginManager().callEvent(new BlockCollisionEvent(rigidBody.getElement(), terrain, impulse));
         }
     }
 }

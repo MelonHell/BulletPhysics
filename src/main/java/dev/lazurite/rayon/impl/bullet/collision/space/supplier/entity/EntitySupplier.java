@@ -2,8 +2,8 @@ package dev.lazurite.rayon.impl.bullet.collision.space.supplier.entity;
 
 import com.jme3.bounding.BoundingBox;
 import dev.lazurite.rayon.api.PhysicsElement;
-import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
+import dev.lazurite.rayon.impl.bullet.math.Convert;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.vehicle.Boat;

@@ -1,8 +1,8 @@
 package dev.lazurite.rayon;
 
 import co.aikar.commands.PaperCommandManager;
+import dev.lazurite.rayon.impl.event.RayonBukkitListener;
 import dev.lazurite.rayon.impl.event.ServerEventHandler;
-import dev.lazurite.rayon.toolbox.api.event.ServerEvents;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,15 +22,14 @@ public class RayonPlugin extends JavaPlugin {
             throw new RuntimeException("Lib is not loaded");
         }
 
-        ServerEventHandler.register();
         Bukkit.getPluginManager().registerEvents(new RayonBukkitListener(), this);
-        ServerEvents.Lifecycle.LOAD_SERVER.invoke(MinecraftServer.getServer());
+        ServerEventHandler.onServerStart(MinecraftServer.getServer());
         PaperCommandManager paperCommandManager = new PaperCommandManager(this);
         paperCommandManager.registerCommand(new RayonCommand());
     }
 
     @Override
     public void onDisable() {
-        ServerEvents.Lifecycle.UNLOAD_SERVER.invoke(MinecraftServer.getServer());
+        ServerEventHandler.onServerStop(MinecraftServer.getServer());
     }
 }

@@ -1,8 +1,12 @@
-package dev.lazurite.rayon;
+package dev.lazurite.rayon.impl.event;
 
 import com.destroystokyo.paper.event.server.ServerTickEndEvent;
 import com.destroystokyo.paper.event.server.ServerTickStartEvent;
-import dev.lazurite.rayon.toolbox.api.event.ServerEvents;
+import dev.lazurite.rayon.BukkitNmsUtil;
+import dev.lazurite.rayon.api.event.physicsSpace.PhysicsSpaceElementAddedEvent;
+import dev.lazurite.rayon.api.event.physicsSpace.PhysicsSpaceStepEvent;
+import dev.lazurite.rayon.impl.bullet.collision.space.generator.PressureGenerator;
+import dev.lazurite.rayon.impl.bullet.collision.space.generator.TerrainGenerator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -24,12 +28,14 @@ public class RayonBukkitListener implements Listener {
     @EventHandler
     public void onServerTickStart(ServerTickStartEvent event){
         for (World world : Bukkit.getWorlds()) {
-            ServerEvents.Tick.START_LEVEL_TICK.invoke(BukkitNmsUtil.nmsWorld(world));
+            ServerLevel level = BukkitNmsUtil.nmsWorld(world);
+            ServerEventHandler.onStartLevelTick(level);
+            ServerEventHandler.onEntityStartLevelTick(level);
         }
     }
     @EventHandler
     public void onServerTickEnd(ServerTickEndEvent event){
-        ServerEvents.Tick.END_SERVER_TICK.invoke(MinecraftServer.getServer());
+        ServerEventHandler.onServerTick(MinecraftServer.getServer());
     }
 
 //    @EventHandler
@@ -42,33 +48,42 @@ public class RayonBukkitListener implements Listener {
         ServerLevel level = BukkitNmsUtil.nmsWorld(event.getBlock().getWorld());
         BlockState blockState = ((CraftBlockState) event.getBlock().getState()).getHandle();
         BlockPos blockPos = ((CraftBlock) event.getBlock()).getPosition();
-        ServerEvents.Block.BLOCK_UPDATE.invoke(level, blockState, blockPos);
+        ServerEventHandler.onBlockUpdate(level, blockState, blockPos);
     }
 
     @EventHandler
     public void onEntitySpawn(EntitySpawnEvent event) {
-        ServerEvents.Entity.LOAD.invoke(BukkitNmsUtil.nmsEntity(event.getEntity()));
+        ServerEventHandler.onEntityLoad(BukkitNmsUtil.nmsEntity(event.getEntity()));
     }
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
-        ServerEvents.Entity.UNLOAD.invoke(BukkitNmsUtil.nmsEntity(event.getEntity()));
+        ServerEventHandler.onStopTrackingEntity(BukkitNmsUtil.nmsEntity(event.getEntity()));
     }
 
     @EventHandler
     public void onChunkLoadEvent(ChunkLoadEvent event) {
         for (Entity entity : event.getChunk().getEntities()) {
-            ServerEvents.Entity.LOAD.invoke(BukkitNmsUtil.nmsEntity(entity));
+            ServerEventHandler.onEntityLoad(BukkitNmsUtil.nmsEntity(entity));
         }
     }
 
     @EventHandler
     public void onEntitiesUnload(EntitiesUnloadEvent event) {
         for (Entity entity : event.getEntities()) {
-            ServerEvents.Entity.UNLOAD.invoke(BukkitNmsUtil.nmsEntity(entity));
+            ServerEventHandler.onStopTrackingEntity(BukkitNmsUtil.nmsEntity(entity));
         }
     }
 
+    @EventHandler
+    public void onPhysicsSpaceStep(PhysicsSpaceStepEvent event) {
+        PressureGenerator.step(event.getSpace());
+        TerrainGenerator.step(event.getSpace());
+    }
 
+    @EventHandler
+    public void onPhysicsSpaceElementAdded(PhysicsSpaceElementAddedEvent event) {
+        ServerEventHandler.onElementAddedToSpace(event.getSpace(), event.getRigidBody());
+    }
 
 }
