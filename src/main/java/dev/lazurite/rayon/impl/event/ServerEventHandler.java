@@ -6,8 +6,7 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.BukkitNmsUtil;
 import dev.lazurite.rayon.RayonPlugin;
 import dev.lazurite.rayon.api.EntityPhysicsElement;
-import dev.lazurite.rayon.api.event.physicsSpace.PhysicsSpaceElementAddedEvent;
-import dev.lazurite.rayon.api.event.physicsSpace.PhysicsSpaceStepEvent;
+import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.EntityCollisionGenerator;
@@ -15,10 +14,8 @@ import dev.lazurite.rayon.impl.bullet.collision.space.generator.PressureGenerato
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.TerrainGenerator;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
-import net.minecraft.core.BlockPos;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_19_R1.block.CraftBlock;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -80,15 +77,27 @@ public class ServerEventHandler implements Listener {
         }
     }
 
-    @EventHandler
-    public void onPhysicsSpaceStep(PhysicsSpaceStepEvent event) {
-        PressureGenerator.step(event.getSpace());
-        TerrainGenerator.step(event.getSpace());
+//    @EventHandler
+//    public void onPhysicsSpaceStep(PhysicsSpaceStepEvent event) {
+//        physicsSpaceStep(event.getSpace());
+//    }
+//
+//    @EventHandler
+//    public void onPhysicsSpaceElementAdded(PhysicsSpaceElementAddedEvent event) {
+//        if (event.getRigidBody() instanceof EntityRigidBody entityBody) {
+//            final var pos = entityBody.getElement().cast().position();
+//            final var box = entityBody.getElement().cast().getBoundingBox();
+//            entityBody.setPhysicsLocation(Convert.toBullet(pos.add(0, box.getYsize() / 2.0, 0)));
+//        }
+//    }
+
+    public static void physicsSpaceStep(MinecraftSpace space) {
+        PressureGenerator.step(space);
+        TerrainGenerator.step(space);
     }
 
-    @EventHandler
-    public void onPhysicsSpaceElementAdded(PhysicsSpaceElementAddedEvent event) {
-        if (event.getRigidBody() instanceof EntityRigidBody entityBody) {
+    public static void physicsSpaceElementAdded(ElementRigidBody rigidBody) {
+        if (rigidBody instanceof EntityRigidBody entityBody) {
             final var pos = entityBody.getElement().cast().position();
             final var box = entityBody.getElement().cast().getBoundingBox();
             entityBody.setPhysicsLocation(Convert.toBullet(pos.add(0, box.getYsize() / 2.0, 0)));
