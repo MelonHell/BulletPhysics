@@ -26,7 +26,6 @@ import java.util.concurrent.Executor;
  */
 public class PhysicsThread extends Thread implements Executor {
     private final Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
-    private final Executor parentExecutor;
     private final Thread parentThread;
     private final LevelSupplier levelSupplier;
 
@@ -38,15 +37,14 @@ public class PhysicsThread extends Thread implements Executor {
     }
 
     public static PhysicsThread get(ReentrantBlockableEventLoop<? extends Runnable> executor) {
-        return ServerEventHandler.getThread();
+        return RayonPlugin.getThread();
     }
 
     public static PhysicsThread get(Level level) {
         return MinecraftSpace.get(level).getWorkerThread();
     }
 
-    public PhysicsThread(Executor parentExecutor, Thread parentThread, LevelSupplier levelSupplier, String name) {
-        this.parentExecutor = parentExecutor;
+    public PhysicsThread(Thread parentThread, LevelSupplier levelSupplier, String name) {
         this.parentThread = parentThread;
         this.levelSupplier = levelSupplier;
 
@@ -90,16 +88,6 @@ public class PhysicsThread extends Thread implements Executor {
      */
     public LevelSupplier getLevelSupplier() {
         return this.levelSupplier;
-    }
-
-    /**
-     * Gets the parent executor. Useful for returning to the main thread,
-     * especially server-side where {@link MinecraftServer} isn't always readily
-     * available.
-     * @return the original {@link Executor} object
-     */
-    public Executor getParentExecutor() {
-        return this.parentExecutor;
     }
 
     /**

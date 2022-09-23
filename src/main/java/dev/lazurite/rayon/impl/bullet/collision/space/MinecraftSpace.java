@@ -157,10 +157,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         }
     }
 
-    public boolean isServer() {
-        return getWorkerThread().getParentExecutor() instanceof MinecraftServer;
-    }
-
     public boolean isStepping() {
         return this.stepping;
     }

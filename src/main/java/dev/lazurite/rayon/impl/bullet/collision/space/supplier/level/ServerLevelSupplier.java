@@ -14,15 +14,15 @@ import java.util.Optional;
  * This {@link LevelSupplier} provides a list of all
  * {@link ServerLevel} objects running on the {@link MinecraftServer}.
  */
-public record ServerLevelSupplier(MinecraftServer server) implements LevelSupplier {
+public record ServerLevelSupplier() implements LevelSupplier {
     @Override
     public List<Level> getAll() {
-        return new ArrayList<>((Collection<? extends Level>) server.getAllLevels());
+        return new ArrayList<>((Collection<? extends Level>) MinecraftServer.getServer().getAllLevels());
     }
 
     @Override
     public Level get(ResourceKey<Level> key) {
-        return server.getLevel(key);
+        return MinecraftServer.getServer().getLevel(key);
     }
 
     @Override
