@@ -16,7 +16,6 @@ import dev.lazurite.rayon.impl.bullet.collision.space.generator.TerrainGenerator
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_19_R1.block.CraftBlock;
@@ -33,8 +32,7 @@ public class ServerEventHandler implements Listener {
     @EventHandler
     public void onServerTickStart(ServerTickStartEvent event){
         for (World world : Bukkit.getWorlds()) {
-            ServerLevel level = BukkitNmsUtil.nmsWorld(world);
-            MinecraftSpace space = MinecraftSpace.get(level);
+            MinecraftSpace space = MinecraftSpace.get(world);
             space.step();
             EntityCollisionGenerator.step(space);
             for (var rigidBody : space.getRigidBodiesByClass(EntityRigidBody.class)) {
@@ -54,32 +52,31 @@ public class ServerEventHandler implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        ServerLevel level = BukkitNmsUtil.nmsWorld(event.getBlock().getWorld());
         BlockPos blockPos = ((CraftBlock) event.getBlock()).getPosition();
-        MinecraftSpace.getOptional(level).ifPresent(space -> space.doBlockUpdate(blockPos));
+        MinecraftSpace.get(event.getBlock().getWorld()).doBlockUpdate(blockPos);
     }
 
     @EventHandler
     public void onEntitySpawn(EntitySpawnEvent event) {
-        entityLoad(BukkitNmsUtil.nmsEntity(event.getEntity()));
+        entityLoad(event.getEntity());
     }
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
-        entityUnload(BukkitNmsUtil.nmsEntity(event.getEntity()));
+        entityUnload(event.getEntity());
     }
 
     @EventHandler
     public void onChunkLoadEvent(ChunkLoadEvent event) {
         for (Entity entity : event.getChunk().getEntities()) {
-            entityLoad(BukkitNmsUtil.nmsEntity(entity));
+            entityLoad(entity);
         }
     }
 
     @EventHandler
     public void onEntitiesUnload(EntitiesUnloadEvent event) {
         for (Entity entity : event.getEntities()) {
-            entityUnload(BukkitNmsUtil.nmsEntity(entity));
+            entityUnload(entity);
         }
     }
 
@@ -98,17 +95,19 @@ public class ServerEventHandler implements Listener {
         }
     }
 
-    private static void entityLoad(net.minecraft.world.entity.Entity entity) {
-        if (entity instanceof EntityPhysicsElement element) {
-            final var space = MinecraftSpace.get(entity.level);
-            space.getWorkerThread().execute(() -> space.addCollisionObject(element.getRigidBody()));
+    private static void entityLoad(Entity entity) {
+        net.minecraft.world.entity.Entity nmsEntity = BukkitNmsUtil.nmsEntity(entity);
+        if (nmsEntity instanceof EntityPhysicsElement element) {
+            final var space = MinecraftSpace.get(entity.getWorld());
+            space.getPhysicsThread().execute(() -> space.addCollisionObject(element.getRigidBody()));
         }
     }
 
-    private static void entityUnload(net.minecraft.world.entity.Entity entity) {
-        if (entity instanceof EntityPhysicsElement element) {
-            final var space = MinecraftSpace.get(entity.level);
-            space.getWorkerThread().execute(() -> space.removeCollisionObject(element.getRigidBody()));
+    private static void entityUnload(Entity entity) {
+        net.minecraft.world.entity.Entity nmsEntity = BukkitNmsUtil.nmsEntity(entity);
+        if (nmsEntity instanceof EntityPhysicsElement element) {
+            final var space = MinecraftSpace.get(entity.getWorld());
+            space.getPhysicsThread().execute(() -> space.removeCollisionObject(element.getRigidBody()));
         }
     }
 }

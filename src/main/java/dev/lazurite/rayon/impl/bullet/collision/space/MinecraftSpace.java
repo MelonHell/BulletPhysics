@@ -18,10 +18,11 @@ import dev.lazurite.rayon.impl.bullet.collision.body.TerrainRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.cache.ChunkCache;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.TerrainGenerator;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
+import lombok.Getter;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -42,8 +43,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
     private final CompletableFuture[] futures = new CompletableFuture[3];
     private final Map<BlockPos, TerrainRigidBody> terrainMap;
-    private final PhysicsThread thread;
-    private final Level level;
+    @Getter
+    private final PhysicsThread physicsThread;
+    @Getter
+    private final World level;
+    @Getter
     private final ChunkCache chunkCache;
 
     private volatile boolean stepping;
@@ -55,15 +59,11 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      * @param level the level to get the physics space from
      * @return the {@link MinecraftSpace}
      */
-    public static MinecraftSpace get(Level level) {
+    public static MinecraftSpace get(World level) {
         return SpaceStorage.get(level);
     }
 
-    public static Optional<MinecraftSpace> getOptional(Level level) {
-        return Optional.ofNullable(get(level));
-    }
-
-    public MinecraftSpace(PhysicsThread thread, Level level) {
+    public MinecraftSpace(PhysicsThread physicsThread, World level) {
         super(
 //                new Vector3f(-Level.MAX_LEVEL_SIZE, Level.MIN_ENTITY_SPAWN_Y, -Level.MAX_LEVEL_SIZE),
 //                new Vector3f(Level.MAX_LEVEL_SIZE, Level.MAX_ENTITY_SPAWN_Y, Level.MAX_LEVEL_SIZE),
@@ -71,7 +71,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
                 BroadphaseType.DBVT
         );
 
-        this.thread = thread;
+        this.physicsThread = physicsThread;
         this.level = level;
         this.chunkCache = ChunkCache.create(this);
         this.terrainMap = new ConcurrentHashMap<>();
@@ -114,7 +114,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
                     /* Step the Simulation */
                     this.update(1 / 60f);
-                }, getWorkerThread());
+                }, getPhysicsThread());
             }
 
             CompletableFuture.allOf(futures).thenRun(() -> this.stepping = false);
@@ -205,18 +205,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         }
 
         return out;
-    }
-
-    public PhysicsThread getWorkerThread() {
-        return this.thread;
-    }
-
-    public Level getLevel() {
-        return this.level;
-    }
-
-    public ChunkCache getChunkCache() {
-        return this.chunkCache;
     }
 
     /**

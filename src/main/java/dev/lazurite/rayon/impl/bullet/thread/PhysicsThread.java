@@ -5,13 +5,11 @@ import dev.lazurite.rayon.api.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.collision.space.supplier.entity.EntitySupplier;
 import dev.lazurite.rayon.impl.bullet.collision.space.supplier.level.LevelSupplier;
-import dev.lazurite.rayon.impl.event.ServerEventHandler;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.thread.ReentrantBlockableEventLoop;
 import net.minecraft.world.level.Level;
+import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
@@ -32,16 +30,12 @@ public class PhysicsThread extends Thread implements Executor {
     public volatile Throwable throwable;
     public volatile boolean running = true;
 
-    public static Optional<PhysicsThread> getOptional(ReentrantBlockableEventLoop<? extends Runnable> executor) {
-        return Optional.ofNullable(get(executor));
-    }
-
-    public static PhysicsThread get(ReentrantBlockableEventLoop<? extends Runnable> executor) {
+    public static PhysicsThread get() {
         return RayonPlugin.getThread();
     }
 
-    public static PhysicsThread get(Level level) {
-        return MinecraftSpace.get(level).getWorkerThread();
+    public static PhysicsThread get(World world) {
+        return MinecraftSpace.get(world).getPhysicsThread();
     }
 
     public PhysicsThread(Thread parentThread, LevelSupplier levelSupplier, String name) {

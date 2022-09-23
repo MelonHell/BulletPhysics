@@ -1,6 +1,7 @@
 package dev.lazurite.rayon.impl.bullet.collision.space.cache;
 
 import com.jme3.bounding.BoundingBox;
+import dev.lazurite.rayon.BukkitNmsUtil;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
@@ -31,11 +32,12 @@ public class SimpleChunkCache implements ChunkCache {
 
     @Override
     public void loadFluidData(BlockPos blockPos) {
-        final var level = space.getLevel();
+        final var world = space.getLevel();
+        final var level = BukkitNmsUtil.nmsWorld(world);
 
         if (!level.getFluidState(blockPos).isEmpty()) {
             if (this.fluidColumns.stream().noneMatch(column -> column.contains(blockPos))) {
-                this.fluidColumns.add(new FluidColumn(new BlockPos(blockPos), level));
+                this.fluidColumns.add(new FluidColumn(new BlockPos(blockPos), world));
             }
         }
     }
@@ -44,13 +46,13 @@ public class SimpleChunkCache implements ChunkCache {
     public void loadBlockData(BlockPos blockPos) {
         this.blockData.remove(blockPos);
 
-        final var level = space.getLevel();
+        final var world = space.getLevel();
+        final var level = BukkitNmsUtil.nmsWorld(space.getLevel());
         final var blockState = level.getBlockState(blockPos);
         final var blockPos2 = new BlockPos(blockPos);
 
         if (ChunkCache.isValidBlock(blockState)) {
             final var properties = BlockProperty.getBlockProperty(blockState.getBlock());
-            MinecraftShape shape = null;
 
 //            if (!blockState.isCollisionShapeFullBlock(level, blockPos) || (properties != null && !properties.isFullBlock())) {
 //                Pattern pattern;
@@ -66,19 +68,21 @@ public class SimpleChunkCache implements ChunkCache {
 //                }
 //            }
 
-            if (shape == null) {
-                final var voxelShape = blockState.getCollisionShape(space.getLevel(), blockPos);
-                final var boundingBox = voxelShape.isEmpty() ? new AABB(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.bounds();
-                shape = MinecraftShape.convex(boundingBox);
-            }
+            // TODO ступеньки хуеньки итд
 
-            this.blockData.put(blockPos2, new BlockData(level, blockPos2, blockState, shape));
+            final var voxelShape = blockState.getCollisionShape(level, blockPos);
+            final var boundingBox = voxelShape.isEmpty() ? new AABB(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.bounds();
+            MinecraftShape.Convex shape = MinecraftShape.convex(boundingBox);
+
+
+            this.blockData.put(blockPos2, new BlockData(world, blockPos2, blockState, shape));
         }
     }
 
     @Override
     public void refreshAll() {
-        final var level = space.getLevel();
+        final var world = space.getLevel();
+        final var level = BukkitNmsUtil.nmsWorld(world);
         this.activePositions.clear();
 
         for (var rigidBody : space.getRigidBodiesByClass(ElementRigidBody.class)) {

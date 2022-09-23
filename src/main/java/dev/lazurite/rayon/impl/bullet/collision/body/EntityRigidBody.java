@@ -20,11 +20,11 @@ public class EntityRigidBody extends ElementRigidBody {
 
     /**
      * The simplest way to create a new {@link EntityRigidBody}.
-     * @param element the element to base this body around
+     * param element the element to base this body around
      */
-    public EntityRigidBody(EntityPhysicsElement element) {
-        this(element, MinecraftSpace.get(element.cast().level), element.createShape());
-    }
+//    public EntityRigidBody(EntityPhysicsElement element) {
+//        this(element, MinecraftSpace.get(element.cast().level), element.createShape());
+//    }
 
     @Override
     public EntityPhysicsElement getElement() {

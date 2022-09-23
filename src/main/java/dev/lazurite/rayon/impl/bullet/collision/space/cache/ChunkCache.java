@@ -1,15 +1,17 @@
 package dev.lazurite.rayon.impl.bullet.collision.space.cache;
 
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.BukkitNmsUtil;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.collision.space.block.BlockProperty;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FluidState;
+import org.bukkit.World;
 
 import java.util.List;
 import java.util.Optional;
@@ -78,10 +80,10 @@ public interface ChunkCache {
 
     Optional<FluidColumn> getFluidColumn(BlockPos blockPos);
 
-    record BlockData(Level level, BlockPos blockPos, BlockState blockState, MinecraftShape shape) {
+    record BlockData(World level, BlockPos blockPos, BlockState blockState, MinecraftShape shape) {
     }
 
-    record FluidData(Level level, BlockPos blockPos, FluidState fluidState) {
+    record FluidData(World level, BlockPos blockPos, FluidState fluidState) {
     }
 
     class FluidColumn {
@@ -90,8 +92,9 @@ public interface ChunkCache {
         private final Vector3f flow;
         private final float height;
 
-        public FluidColumn(BlockPos start, Level level) {
+        public FluidColumn(BlockPos start, World world) {
             final var cursor = new BlockPos(start).mutable();
+            ServerLevel level = BukkitNmsUtil.nmsWorld(world);
             var fluidState = level.getFluidState(cursor);
 
             // find bottom block
@@ -102,7 +105,7 @@ public interface ChunkCache {
 
             cursor.set(cursor.above()); // the above loop ends at one below the bottom
             fluidState = level.getFluidState(cursor);
-            this.bottom = new FluidData(level, new BlockPos(cursor), level.getFluidState(cursor));
+            this.bottom = new FluidData(world, new BlockPos(cursor), level.getFluidState(cursor));
 
             // find top block
             while (!fluidState.isEmpty()) {
@@ -113,7 +116,7 @@ public interface ChunkCache {
             cursor.set(cursor.below());
             fluidState = level.getFluidState(cursor);
 
-            this.top = new FluidData(level, new BlockPos(cursor), fluidState);
+            this.top = new FluidData(world, new BlockPos(cursor), fluidState);
             this.height = fluidState.getHeight(level, cursor);
 
             // Water flow direction

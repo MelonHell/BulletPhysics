@@ -13,7 +13,7 @@ public class RayonCommand extends BaseCommand {
     public void test(Player player, @Default("1") int count) {
         for (int i = 0; i < count; i++) {
             TestPhysicsElement testPhysicsElement = new TestPhysicsElement(player.getLocation());
-            MinecraftSpace.get(BukkitNmsUtil.nmsWorld(player.getWorld())).addCollisionObject(testPhysicsElement.getRigidBody());
+            MinecraftSpace.get(player.getWorld()).addCollisionObject(testPhysicsElement.getRigidBody());
         }
     }
 }
