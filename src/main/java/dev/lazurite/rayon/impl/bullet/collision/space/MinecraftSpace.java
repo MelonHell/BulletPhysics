@@ -7,23 +7,15 @@ import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.impl.event.ServerEventHandler;
-import dev.lazurite.rayon.notNms.BlockPos;
 import dev.lazurite.rayon.SpaceStorage;
-//import dev.lazurite.rayon.api.event.elementCollision.BlockCollisionEvent;
-//import dev.lazurite.rayon.api.event.elementCollision.ElementCollisionEvent;
-//import dev.lazurite.rayon.api.event.physicsSpace.PhysicsSpaceElementAddedEvent;
-//import dev.lazurite.rayon.api.event.physicsSpace.PhysicsSpaceElementRemovedEvent;
-//import dev.lazurite.rayon.api.event.physicsSpace.PhysicsSpaceStepEvent;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.TerrainRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.cache.ChunkCache;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.TerrainGenerator;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
+import dev.lazurite.rayon.impl.event.ServerEventHandler;
+import dev.lazurite.rayon.nms.wrappers.BlockPosWrapper;
 import lombok.Getter;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import java.util.*;
@@ -44,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
     private final CompletableFuture[] futures = new CompletableFuture[3];
-    private final Map<BlockPos, TerrainRigidBody> terrainMap;
+    private final Map<BlockPosWrapper, TerrainRigidBody> terrainMap;
     @Getter
     private final PhysicsThread physicsThread;
     @Getter
@@ -56,7 +48,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
     /**
      * Allows users to retrieve the {@link MinecraftSpace} associated
-     * with any given {@link Level} object (client or server).
+     * with any given {link Level} object (client or server).
      *
      * @param level the level to get the physics space from
      * @return the {@link MinecraftSpace}
@@ -165,13 +157,13 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         return this.stepping;
     }
 
-    public void doBlockUpdate(BlockPos blockPos) {
+    public void doBlockUpdate(BlockPosWrapper blockPos) {
         this.chunkCache.loadBlockData(blockPos);
         this.chunkCache.loadFluidData(blockPos);
         this.wakeNearbyElementRigidBodies(blockPos);
     }
 
-    public void wakeNearbyElementRigidBodies(BlockPos blockPos) {
+    public void wakeNearbyElementRigidBodies(BlockPosWrapper blockPos) {
         for (var rigidBody : getRigidBodiesByClass(ElementRigidBody.class)) {
             if (!rigidBody.terrainLoadingEnabled()) {
                 continue;
@@ -183,15 +175,15 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         }
     }
 
-    public Map<BlockPos, TerrainRigidBody> getTerrainMap() {
+    public Map<BlockPosWrapper, TerrainRigidBody> getTerrainMap() {
         return new HashMap<>(this.terrainMap);
     }
 
-    public Optional<TerrainRigidBody> getTerrainObjectAt(BlockPos blockPos) {
+    public Optional<TerrainRigidBody> getTerrainObjectAt(BlockPosWrapper blockPos) {
         return Optional.ofNullable(terrainMap.get(blockPos));
     }
 
-    public void removeTerrainObjectAt(BlockPos blockPos) {
+    public void removeTerrainObjectAt(BlockPosWrapper blockPos) {
         final var removed = terrainMap.remove(blockPos);
 
         if (removed != null) {

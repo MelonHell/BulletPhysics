@@ -1,4 +1,4 @@
-package dev.lazurite.rayon.toolbox.api.math;
+package dev.lazurite.rayon.nms.toolbox;
 
 import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
@@ -9,7 +9,7 @@ import net.minecraft.network.FriendlyByteBuf;
  * A useful helper for dealing with Minecraft quaternions.
  * @since 1.0.0
  */
-public class QuaternionHelper {
+public class QuaternionHelper_v1_19_2 {
     /**
      * Rotate the given {@link Quaternion} by the given number of degrees on the X axis.
      * @param quat the {@link Quaternion} to perform the operation on
@@ -125,7 +125,7 @@ public class QuaternionHelper {
      * @return the yaw angle
      */
     public static float getYaw(Quaternion quat) {
-        return -1 * (float) Math.toDegrees(QuaternionHelper.toEulerAngles(quat).z());
+        return -1 * (float) Math.toDegrees(QuaternionHelper_v1_19_2.toEulerAngles(quat).z());
     }
 
     /**
@@ -134,7 +134,7 @@ public class QuaternionHelper {
      * @return the pitch angle
      */
     public static float getPitch(Quaternion quat) {
-        return (float) Math.toDegrees(QuaternionHelper.toEulerAngles(quat).y());
+        return (float) Math.toDegrees(QuaternionHelper_v1_19_2.toEulerAngles(quat).y());
     }
 
     /**
@@ -143,7 +143,7 @@ public class QuaternionHelper {
      * @return the roll angle
      */
     public static float getRoll(Quaternion quat) {
-        return (float) Math.toDegrees(QuaternionHelper.toEulerAngles(quat).x());
+        return (float) Math.toDegrees(QuaternionHelper_v1_19_2.toEulerAngles(quat).x());
     }
 
     /**

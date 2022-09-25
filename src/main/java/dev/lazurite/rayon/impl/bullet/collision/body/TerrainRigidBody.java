@@ -5,21 +5,21 @@ import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.collision.space.block.BlockProperty;
 import dev.lazurite.rayon.impl.bullet.collision.space.cache.ChunkCache;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.state.BlockState;
+import dev.lazurite.rayon.nms.wrappers.BlockPosWrapper;
+import org.bukkit.block.BlockState;
 
 public class TerrainRigidBody extends MinecraftRigidBody {
-    private final BlockPos blockPos;
+    private final BlockPosWrapper blockPos;
     private final BlockState state;
 
     public static TerrainRigidBody from(ChunkCache.BlockData blockData) {
-        final var blockProperty = BlockProperty.getBlockProperty(blockData.blockState().getBlock());
+        final var blockProperty = BlockProperty.getBlockProperty(blockData.blockState().getType());
         final var friction = blockProperty == null ? 0.75f : blockProperty.friction();
         final var restitution = blockProperty == null ? 0.25f : blockProperty.restitution();
-        return new TerrainRigidBody(MinecraftSpace.get(blockData.level()), blockData.shape(), blockData.blockPos(), blockData.blockState(), friction, restitution);
+        return new TerrainRigidBody(MinecraftSpace.get(blockData.block().getWorld()), blockData.shape(), new BlockPosWrapper(blockData.block()), blockData.blockState(), friction, restitution);
     }
 
-    public TerrainRigidBody(MinecraftSpace space, MinecraftShape shape, BlockPos blockPos, BlockState blockState, float friction, float restitution) {
+    public TerrainRigidBody(MinecraftSpace space, MinecraftShape shape, BlockPosWrapper blockPos, BlockState blockState, float friction, float restitution) {
         super(space, shape);
         this.blockPos = blockPos;
         this.state = blockState;
@@ -29,7 +29,7 @@ public class TerrainRigidBody extends MinecraftRigidBody {
         this.setPhysicsLocation(new Vector3f(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f));
     }
 
-    public BlockPos getBlockPos() {
+    public BlockPosWrapper getBlockPos() {
         return this.blockPos;
     }
 

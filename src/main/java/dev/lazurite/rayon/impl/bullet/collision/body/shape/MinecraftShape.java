@@ -7,7 +7,7 @@ import com.jme3.bullet.collision.shapes.infos.IndexedMesh;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
-import net.minecraft.world.phys.AABB;
+import dev.lazurite.rayon.nms.wrappers.AABBWrapper;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +18,7 @@ public sealed interface MinecraftShape permits MinecraftShape.Convex, MinecraftS
     List<Triangle> getTriangles(Quaternion quaternion);
     float getVolume();
 
-    static Convex convex(AABB box) {
+    static Convex convex(AABBWrapper box) {
         return MinecraftShape.convex(Convert.toBullet(box));
     }
 
@@ -26,7 +26,7 @@ public sealed interface MinecraftShape permits MinecraftShape.Convex, MinecraftS
         return new Convex(Triangle.getMeshOf(box));
     }
 
-    static Concave concave(AABB box) {
+    static Concave concave(AABBWrapper box) {
         return MinecraftShape.concave(Convert.toBullet(box));
     }
 

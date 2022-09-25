@@ -1,17 +1,16 @@
 package dev.lazurite.rayon.impl.bullet.collision.space.cache;
 
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.BukkitNmsUtil;
+import dev.lazurite.rayon.RayonPlugin;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.collision.space.block.BlockProperty;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.material.FluidState;
-import org.bukkit.World;
+import dev.lazurite.rayon.nms.wrappers.BlockPosWrapper;
+import dev.lazurite.rayon.nms.wrappers.FluidStateWrapper;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,17 +32,10 @@ public interface ChunkCache {
             return false;
         }
 
-        final var block = blockState.getBlock();
+        final var block = blockState.getType();
         final var properties = BlockProperty.getBlockProperty(block);
 
-        return properties != null ? properties.collidable() :
-                !blockState.isAir() &&
-                        !block.isPossibleToRespawnInThis() && (
-                        blockState.getFluidState().isEmpty() || (
-                                blockState.hasProperty(BlockStateProperties.WATERLOGGED) &&
-                                        blockState.getValue(BlockStateProperties.WATERLOGGED)
-                        )
-                );
+        return properties != null ? properties.collidable() : RayonPlugin.getNmsTools().collidableCheck(blockState);
     }
 
 //    static Pattern genShapeForBlock(BlockGetter blockGetter, BlockPos blockPos, BlockState blockState) {
@@ -66,9 +58,9 @@ public interface ChunkCache {
 
     void refreshAll();
 
-    void loadBlockData(BlockPos blockPos);
+    void loadBlockData(BlockPosWrapper blockPos);
 
-    void loadFluidData(BlockPos blockPos);
+    void loadFluidData(BlockPosWrapper blockPos);
 
     MinecraftSpace getSpace();
 
@@ -76,14 +68,14 @@ public interface ChunkCache {
 
     List<FluidColumn> getFluidColumns();
 
-    Optional<BlockData> getBlockData(BlockPos blockPos);
+    Optional<BlockData> getBlockData(BlockPosWrapper blockPos);
 
-    Optional<FluidColumn> getFluidColumn(BlockPos blockPos);
+    Optional<FluidColumn> getFluidColumn(BlockPosWrapper blockPos);
 
-    record BlockData(World level, BlockPos blockPos, BlockState blockState, MinecraftShape shape) {
+    record BlockData(Block block, BlockState blockState, MinecraftShape shape) {
     }
 
-    record FluidData(World level, BlockPos blockPos, FluidState fluidState) {
+    record FluidData(Block block, FluidStateWrapper fluidState) {
     }
 
     class FluidColumn {
@@ -92,42 +84,42 @@ public interface ChunkCache {
         private final Vector3f flow;
         private final float height;
 
-        public FluidColumn(BlockPos start, World world) {
-            final var cursor = new BlockPos(start).mutable();
-            ServerLevel level = BukkitNmsUtil.nmsWorld(world);
-            var fluidState = level.getFluidState(cursor);
+        public FluidColumn(Block start) {
+            var cursor = start;
+
+            var fluidState = RayonPlugin.getNmsTools().getFluidState(cursor);
 
             // find bottom block
             while (!fluidState.isEmpty()) {
-                cursor.set(cursor.below());
-                fluidState = level.getFluidState(cursor);
+                cursor = cursor.getRelative(BlockFace.DOWN);
+                fluidState = RayonPlugin.getNmsTools().getFluidState(cursor);
             }
 
-            cursor.set(cursor.above()); // the above loop ends at one below the bottom
-            fluidState = level.getFluidState(cursor);
-            this.bottom = new FluidData(world, new BlockPos(cursor), level.getFluidState(cursor));
+            cursor = cursor.getRelative(BlockFace.UP); // the above loop ends at one below the bottom
+            fluidState = RayonPlugin.getNmsTools().getFluidState(cursor);
+            this.bottom = new FluidData(cursor, RayonPlugin.getNmsTools().getFluidState(cursor));
 
             // find top block
             while (!fluidState.isEmpty()) {
-                cursor.set(cursor.above());
-                fluidState = level.getFluidState(cursor);
+                cursor = cursor.getRelative(BlockFace.UP);
+                fluidState = RayonPlugin.getNmsTools().getFluidState(cursor);
             }
 
-            cursor.set(cursor.below());
-            fluidState = level.getFluidState(cursor);
+            cursor = cursor.getRelative(BlockFace.DOWN);
+            fluidState = RayonPlugin.getNmsTools().getFluidState(cursor);
 
-            this.top = new FluidData(world, new BlockPos(cursor), fluidState);
-            this.height = fluidState.getHeight(level, cursor);
+            this.top = new FluidData(cursor, fluidState);
+            this.height = RayonPlugin.getNmsTools().getHeight(fluidState, cursor);
 
             // Water flow direction
-            this.flow = Convert.toBullet(fluidState.getFlow(level, cursor));
+            this.flow = Convert.toBullet(RayonPlugin.getNmsTools().getFlow(fluidState, cursor));
         }
 
-        public boolean contains(BlockPos blockPos) {
-            return top.blockPos.getX() == blockPos.getX()
-                    && top.blockPos.getZ() == blockPos.getZ()
-                    && top.blockPos.getY() >= blockPos.getY()
-                    && bottom.blockPos.getY() <= blockPos.getY();
+        public boolean contains(BlockPosWrapper blockPos) {
+            return top.block.getX() == blockPos.getX()
+                    && top.block.getZ() == blockPos.getZ()
+                    && top.block.getY() >= blockPos.getY()
+                    && bottom.block.getY() <= blockPos.getY();
         }
 
         public FluidData getTop() {
@@ -176,7 +168,7 @@ public interface ChunkCache {
         }
 
         public int getHeight() {
-            return this.top.blockPos.getY() - this.bottom.blockPos.getY() + 1;
+            return this.top.block.getY() - this.bottom.block.getY() + 1;
         }
 
         public Vector3f getFlow() {

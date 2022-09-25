@@ -2,46 +2,39 @@ package dev.lazurite.rayon.impl.bullet.math;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector3f;
-import com.mojang.math.Quaternion;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
+import dev.lazurite.rayon.nms.wrappers.AABBWrapper;
+import dev.lazurite.rayon.nms.wrappers.BlockPosWrapper;
+import dev.lazurite.rayon.nms.wrappers.QuaternionWrapper;
+import org.bukkit.util.Vector;
 
 public class Convert {
-    public static AABB toMinecraft(BoundingBox box) {
+    public static AABBWrapper toMinecraft(BoundingBox box) {
         var min = box.getMin(new Vector3f());
         var max = box.getMax(new Vector3f());
-        return new AABB(min.x, min.y, min.z, max.x, max.y, max.z);
+        return new AABBWrapper(min.x, min.y, min.z, max.x, max.y, max.z);
     }
 
-    public static BoundingBox toBullet(AABB box) {
-        return new BoundingBox(toBullet(box.getCenter()),
-                (float) box.getXsize(),
-                (float) box.getYsize(),
-                (float) box.getZsize());
+    public static BoundingBox toBullet(AABBWrapper box) {
+        return new BoundingBox(new Vector3f((float) box.getMinX(), (float) box.getMinY(), (float) box.getMinZ()), new Vector3f((float) box.getMaxX(), (float) box.getMaxY(), (float) box.getMaxZ()));
     }
 
-    public static com.jme3.math.Quaternion toBullet(Quaternion quat) {
-        return new com.jme3.math.Quaternion(quat.i(), quat.j(), quat.k(), quat.r());
+    public static com.jme3.math.Quaternion toBullet(QuaternionWrapper quat) {
+        return new com.jme3.math.Quaternion(quat.getI(), quat.getJ(), quat.getK(), quat.getR());
     }
 
-    public static Vector3f toBullet(BlockPos blockPos) {
+    public static Vector3f toBullet(BlockPosWrapper blockPos) {
         return new Vector3f(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f);
     }
 
-    public static Quaternion toMinecraft(com.jme3.math.Quaternion quat) {
-        return new Quaternion(quat.getX(), quat.getY(), quat.getZ(), quat.getW());
+    public static QuaternionWrapper toMinecraft(com.jme3.math.Quaternion quat) {
+        return new QuaternionWrapper(quat.getX(), quat.getY(), quat.getZ(), quat.getW());
     }
 
-    public static com.mojang.math.Vector3f toMinecraft(Vector3f vector3f) {
-        return new com.mojang.math.Vector3f(vector3f.x, vector3f.y, vector3f.z);
+    public static Vector toMinecraft(Vector3f vector3f) {
+        return new Vector(vector3f.x, vector3f.y, vector3f.z);
     }
 
-    public static Vector3f toBullet(com.mojang.math.Vector3f vector3f) {
-        return new Vector3f(vector3f.x(), vector3f.y(), vector3f.z());
-    }
-
-    public static Vector3f toBullet(Vec3 vec3) {
-        return new Vector3f((float) vec3.x(), (float) vec3.y(), (float) vec3.z());
+    public static Vector3f toBullet(Vector vector3f) {
+        return new Vector3f((float) vector3f.getX(), (float) vector3f.getY(), (float) vector3f.getZ());
     }
 }

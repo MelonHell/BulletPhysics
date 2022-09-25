@@ -5,7 +5,6 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
-import net.minecraft.world.entity.Entity;
 
 /**
  * This is the main interface you'll want to implement into your physics object. It provides
@@ -50,7 +49,7 @@ public interface PhysicsElement<T> {
 
     /**
      * Returns the object as its generic type.
-     * (e.g. {@link EntityPhysicsElement} -> {@link Entity})
+     * (e.g. {@link EntityPhysicsElement} -> {link Entity})
      * @return this as {@link T}
      */
     default T cast() {

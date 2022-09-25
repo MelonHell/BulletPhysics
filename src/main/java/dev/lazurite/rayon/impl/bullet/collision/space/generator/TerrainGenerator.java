@@ -1,12 +1,11 @@
 package dev.lazurite.rayon.impl.bullet.collision.space.generator;
 
 import com.jme3.bounding.BoundingBox;
+import dev.lazurite.rayon.RayonPlugin;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.TerrainRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.Block;
 
 import java.util.HashSet;
 
@@ -26,10 +25,11 @@ public class TerrainGenerator {
 
             final var aabb = Convert.toMinecraft(rigidBody.boundingBox(new BoundingBox())).inflate(0.5f);
 
-            BlockPos.betweenClosedStream(aabb).forEach(blockPos -> {
+
+            RayonPlugin.getNmsTools().betweenClosedStream(aabb).forEach(blockPos -> {
                 chunkCache.getBlockData(blockPos).ifPresent(blockData -> {
                     space.getTerrainObjectAt(blockPos).ifPresentOrElse(terrain -> {
-                        if (Block.getId(blockData.blockState()) != Block.getId(terrain.getBlockState())) {
+                        if (RayonPlugin.getNmsTools().getBlockId(blockData.blockState()) != RayonPlugin.getNmsTools().getBlockId(terrain.getBlockState())) {
                             space.removeCollisionObject(terrain);
 
                             final var terrain2 = TerrainRigidBody.from(blockData);

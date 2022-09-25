@@ -1,16 +1,17 @@
-package dev.lazurite.rayon.toolbox.api.math;
+package dev.lazurite.rayon.nms.toolbox;
 
 import com.mojang.math.Vector3f;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.bukkit.util.Vector;
 
 /**
  * A useful helper for dealing with Minecraft vectors.
  * @since 1.0.0
  */
-public class VectorHelper {
+public class VectorHelper_v1_19_2 {
     public static Vector3f toVector3f(Vec3 Vec3) {
         return new Vector3f((float) Vec3.x, (float) Vec3.y, (float) Vec3.z);
     }
@@ -31,6 +32,14 @@ public class VectorHelper {
                 Mth.lerp(delta, vec1.x(), vec2.x()),
                 Mth.lerp(delta, vec1.y(), vec2.y()),
                 Mth.lerp(delta, vec1.z(), vec2.z())
+        );
+    }
+
+    public static Vector lerp(Vector vec1, Vector vec2, float delta) {
+        return new Vector(
+                Mth.lerp(delta, vec1.getX(), vec2.getX()),
+                Mth.lerp(delta, vec1.getY(), vec2.getY()),
+                Mth.lerp(delta, vec1.getZ(), vec2.getZ())
         );
     }
 

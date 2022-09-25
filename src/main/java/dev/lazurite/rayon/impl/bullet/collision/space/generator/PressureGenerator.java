@@ -7,7 +7,7 @@ import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.Triangle;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
-import net.minecraft.core.BlockPos;
+import dev.lazurite.rayon.nms.wrappers.BlockPosWrapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,15 +81,15 @@ public class PressureGenerator {
                     totalCrossSectionalArea += crossSectionalArea;
                 }
 
-                final var blockPos = new BlockPos(
-                        location.x + centroid.x,
-                        location.y + centroid.y,
-                        location.z + centroid.z);
+                final var blockPos = new BlockPosWrapper(
+                        (int) (location.x + centroid.x),
+                        (int) (location.y + centroid.y),
+                        (int) (location.z + centroid.z));
 
                 final var posRelativeToBlockCenter = new Vector3f(centroid).add(location).subtract(Convert.toBullet(blockPos));
 
                 chunkCache.getFluidColumn(blockPos).ifPresent(fluidColumn -> {
-                    final var waterHeight = fluidColumn.getTop().blockPos().getY() + fluidColumn.getTopHeight(posRelativeToBlockCenter) - location.y - centroid.y;
+                    final var waterHeight = fluidColumn.getTop().block().getY() + fluidColumn.getTopHeight(posRelativeToBlockCenter) - location.y - centroid.y;
 
                     if (waterHeight > 0.0f) {
                         submergedTriangles.add(triangle);
@@ -104,18 +104,18 @@ public class PressureGenerator {
                 final var centroid = triangle.getCentroid();
                 final var area = triangle.getArea();
 
-                final var blockPos = new BlockPos(
-                        location.x + centroid.x,
-                        location.y + centroid.y,
-                        location.z + centroid.z);
+                final var blockPos = new BlockPosWrapper(
+                        (int) (location.x + centroid.x),
+                        (int) (location.y + centroid.y),
+                        (int) (location.z + centroid.z));
 
                 if (submergedTriangles.contains(triangle)) {
                     final var posRelativeToBlockCenter = new Vector3f(centroid).add(location).subtract(Convert.toBullet(blockPos));
 
                     final var waterHeight = chunkCache.getFluidColumn(blockPos)
-                            .map(fluidColumn -> (float) fluidColumn.getTop().blockPos().getY() + fluidColumn.getTopHeight(posRelativeToBlockCenter) - location.y - centroid.y).orElse(0.0f);
+                            .map(fluidColumn -> (float) fluidColumn.getTop().block().getY() + fluidColumn.getTopHeight(posRelativeToBlockCenter) - location.y - centroid.y).orElse(0.0f);
 
-                    chunkCache.getFluidColumn(new BlockPos(location.x, location.y, location.z)).ifPresent(fluidColumn -> {
+                    chunkCache.getFluidColumn(new BlockPosWrapper((int) location.x, (int) location.y, (int) location.z)).ifPresent(fluidColumn -> {
                         final var flowForce = new Vector3f(fluidColumn.getFlow());
 
                         if (Float.isFinite(flowForce.lengthSquared()) && flowForce.lengthSquared() > 0.0f) {

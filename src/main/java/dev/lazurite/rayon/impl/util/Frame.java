@@ -2,10 +2,9 @@ package dev.lazurite.rayon.impl.util;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.RayonPlugin;
 import dev.lazurite.rayon.api.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
-import dev.lazurite.rayon.toolbox.api.math.QuaternionHelper;
-import dev.lazurite.rayon.toolbox.api.math.VectorHelper;
 
 /**
  * A {@link Frame} can be used for interpolation on the render thread.
@@ -44,14 +43,14 @@ public class Frame {
     public Vector3f getLocation(Vector3f store, float tickDelta) {
         var prevLocation = Convert.toMinecraft(this.prevLocation);
         var tickLocation = Convert.toMinecraft(this.tickLocation);
-        var lerp = VectorHelper.lerp(prevLocation, tickLocation, tickDelta);
+        var lerp = RayonPlugin.getNmsTools().lerp(prevLocation, tickLocation, tickDelta);
         return store.set(Convert.toBullet(lerp));
     }
 
     public Quaternion getRotation(Quaternion store, float tickDelta) {
         var prevRotation = Convert.toMinecraft(this.prevRotation);
         var tickRotation= Convert.toMinecraft(this.tickRotation);
-        var slerp = QuaternionHelper.slerp(prevRotation, tickRotation, tickDelta);
+        var slerp = RayonPlugin.getNmsTools().slerp(prevRotation, tickRotation, tickDelta);
         return store.set(Convert.toBullet(slerp));
     }
 
@@ -63,10 +62,7 @@ public class Frame {
     public Vector3f getRotationDelta(Vector3f store) {
         final var tickRotation = Convert.toMinecraft(this.tickRotation);
         final var prevRotation = Convert.toMinecraft(this.prevRotation);
-        final var tickAngles = QuaternionHelper.toEulerAngles(tickRotation);
-        final var prevAngles = QuaternionHelper.toEulerAngles(prevRotation);
-        tickAngles.sub(prevAngles);
-        store.set(Convert.toBullet(tickAngles));
+        store.set(Convert.toBullet(RayonPlugin.getNmsTools().getRotationDelta(tickRotation, prevRotation)));
         return store;
     }
 }

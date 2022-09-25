@@ -9,11 +9,8 @@ import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.impl.bullet.thread.util.Clock;
 import dev.lazurite.rayon.impl.util.Frame;
-import dev.lazurite.rayon.toolbox.api.math.QuaternionHelper;
-import dev.lazurite.rayon.toolbox.api.math.VectorHelper;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.phys.AABB;
+import dev.lazurite.rayon.nms.wrappers.AABBWrapper;
+import dev.lazurite.rayon.nms.wrappers.BlockPosWrapper;
 
 public class ElementRigidBody extends MinecraftRigidBody {
     public static final float SLEEP_TIME_IN_SECONDS = 2.0f;
@@ -45,17 +42,17 @@ public class ElementRigidBody extends MinecraftRigidBody {
         return this.element;
     }
 
-    public void readTagInfo(CompoundTag tag) {
-        this.setPhysicsRotation(Convert.toBullet(QuaternionHelper.fromTag(tag.getCompound("orientation"))));
-        this.setLinearVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("linearVelocity"))));
-        this.setAngularVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("angularVelocity"))));
-//        this.setMass(tag.getFloat("mass"));
-//        this.setDragCoefficient(tag.getFloat("dragCoefficient"));
-//        this.setFriction(tag.getFloat("friction"));
-//        this.setRestitution(tag.getFloat("restitution"));
-//        this.setBuoyancyType(ElementRigidBody.BuoyancyType.values()[tag.getInt("buoyancyType")]);
-//        this.setDragType(ElementRigidBody.DragType.values()[tag.getInt("dragType")]);
-    }
+//    public void readTagInfo(CompoundTag tag) {
+//        this.setPhysicsRotation(Convert.toBullet(QuaternionHelper.fromTag(tag.getCompound("orientation"))));
+//        this.setLinearVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("linearVelocity"))));
+//        this.setAngularVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("angularVelocity"))));
+////        this.setMass(tag.getFloat("mass"));
+////        this.setDragCoefficient(tag.getFloat("dragCoefficient"));
+////        this.setFriction(tag.getFloat("friction"));
+////        this.setRestitution(tag.getFloat("restitution"));
+////        this.setBuoyancyType(ElementRigidBody.BuoyancyType.values()[tag.getInt("buoyancyType")]);
+////        this.setDragType(ElementRigidBody.DragType.values()[tag.getInt("dragType")]);
+//    }
 
     public boolean terrainLoadingEnabled() {
         return this.terrainLoading && !this.isStatic();
@@ -106,8 +103,8 @@ public class ElementRigidBody extends MinecraftRigidBody {
         getFrame().from(getFrame(), getPhysicsLocation(new Vector3f()), getPhysicsRotation(new Quaternion()));
     }
 
-    public boolean isNear(BlockPos blockPos) {
-        return Convert.toMinecraft(this.boundingBox(new BoundingBox())).intersects(new AABB(blockPos).inflate(0.5f));
+    public boolean isNear(BlockPosWrapper blockPos) {
+        return Convert.toMinecraft(this.boundingBox(new BoundingBox())).intersects(new AABBWrapper(blockPos).inflate(0.5f));
     }
 
     public boolean isWaterBuoyancyEnabled() {
