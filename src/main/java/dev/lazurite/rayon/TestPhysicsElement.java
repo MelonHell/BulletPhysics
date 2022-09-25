@@ -24,7 +24,7 @@ public class TestPhysicsElement implements PhysicsElement {
     public TestPhysicsElement(Location location) {
         this.world = location.getWorld();
         MinecraftSpace space = MinecraftSpace.get(location.getWorld());
-        float size = 0.20f;
+        float size = 0.25f;
         this.convex = MinecraftShape.convex(new BoundingBox(new Vector3f(), size, size, size));
         MiniSkullModel miniSkullModel = new MiniSkullModel(MelonPacketLibApi.createGroup(location, AllPlayersGroup.INSTANCE), location, Rotation.IDENTITY);
 

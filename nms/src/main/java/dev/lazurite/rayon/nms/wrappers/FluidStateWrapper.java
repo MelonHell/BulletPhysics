@@ -7,5 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class FluidStateWrapper {
     private final Object handle;
-    private boolean isEmpty;
+    private final boolean isEmpty;
 }

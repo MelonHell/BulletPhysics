@@ -15,7 +15,10 @@ public class Convert {
     }
 
     public static BoundingBox toBullet(AABBWrapper box) {
-        return new BoundingBox(new Vector3f((float) box.getMinX(), (float) box.getMinY(), (float) box.getMinZ()), new Vector3f((float) box.getMaxX(), (float) box.getMaxY(), (float) box.getMaxZ()));
+        return new BoundingBox(toBullet(box.getCenter()),
+                (float) box.getXsize(),
+                (float) box.getYsize(),
+                (float) box.getZsize());
     }
 
     public static com.jme3.math.Quaternion toBullet(QuaternionWrapper quat) {
