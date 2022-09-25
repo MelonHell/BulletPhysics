@@ -2,14 +2,12 @@ package dev.lazurite.rayon.impl.event;
 
 import com.destroystokyo.paper.event.server.ServerTickEndEvent;
 import com.destroystokyo.paper.event.server.ServerTickStartEvent;
-import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.RayonPlugin;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.EntityCollisionGenerator;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.PressureGenerator;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.TerrainGenerator;
-import dev.lazurite.rayon.impl.bullet.math.Convert;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
 import dev.lazurite.rayon.nms.wrappers.BlockPosWrapper;
 import org.bukkit.Bukkit;

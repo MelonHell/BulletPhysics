@@ -6,7 +6,7 @@ import com.jme3.math.Vector3f;
 import dev.lazurite.rayon.api.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
-import dev.lazurite.rayon.impl.bullet.math.Convert;
+import dev.lazurite.rayon.utils.math.Convert;
 import dev.lazurite.rayon.impl.bullet.thread.util.Clock;
 import dev.lazurite.rayon.impl.util.Frame;
 import dev.lazurite.rayon.nms.wrappers.AABBWrapper;

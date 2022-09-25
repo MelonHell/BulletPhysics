@@ -12,7 +12,7 @@ import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
  * {@link MinecraftSpace}.
  * @since 1.0.0
  */
-public interface PhysicsElement<T> {
+public interface PhysicsElement {
     /**
      * Gets {@link ElementRigidBody} object associated with this element. You should create and
      * store this in your {@link PhysicsElement} implementation in the constructor. You're able
@@ -45,14 +45,5 @@ public interface PhysicsElement<T> {
      */
     default Quaternion getPhysicsRotation(Quaternion store, float tickDelta) {
         return getRigidBody().getFrame().getRotation(store, tickDelta);
-    }
-
-    /**
-     * Returns the object as its generic type.
-     * (e.g. {@link EntityPhysicsElement} -> {link Entity})
-     * @return this as {@link T}
-     */
-    default T cast() {
-        return (T) this;
     }
 }

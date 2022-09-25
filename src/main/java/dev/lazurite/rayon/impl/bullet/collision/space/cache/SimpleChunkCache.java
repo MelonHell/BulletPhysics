@@ -6,7 +6,7 @@ import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.collision.space.block.BlockProperty;
-import dev.lazurite.rayon.impl.bullet.math.Convert;
+import dev.lazurite.rayon.utils.math.Convert;
 import dev.lazurite.rayon.nms.wrappers.AABBWrapper;
 import dev.lazurite.rayon.nms.wrappers.BlockPosWrapper;
 

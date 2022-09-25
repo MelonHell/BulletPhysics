@@ -5,7 +5,7 @@ import dev.lazurite.rayon.RayonPlugin;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.collision.space.block.BlockProperty;
-import dev.lazurite.rayon.impl.bullet.math.Convert;
+import dev.lazurite.rayon.utils.math.Convert;
 import dev.lazurite.rayon.nms.wrappers.BlockPosWrapper;
 import dev.lazurite.rayon.nms.wrappers.FluidStateWrapper;
 import org.bukkit.block.Block;
@@ -35,7 +35,8 @@ public interface ChunkCache {
         final var block = blockState.getType();
         final var properties = BlockProperty.getBlockProperty(block);
 
-        return properties != null ? properties.collidable() : RayonPlugin.getNmsTools().collidableCheck(blockState);
+        if (properties != null) return properties.collidable();
+        return RayonPlugin.getNmsTools().collidableCheck(blockState);
     }
 
 //    static Pattern genShapeForBlock(BlockGetter blockGetter, BlockPos blockPos, BlockState blockState) {

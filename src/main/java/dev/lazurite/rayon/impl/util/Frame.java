@@ -2,9 +2,8 @@ package dev.lazurite.rayon.impl.util;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.RayonPlugin;
 import dev.lazurite.rayon.api.PhysicsElement;
-import dev.lazurite.rayon.impl.bullet.math.Convert;
+import dev.lazurite.rayon.utils.math.MathShit;
 
 /**
  * A {@link Frame} can be used for interpolation on the render thread.
@@ -41,28 +40,23 @@ public class Frame {
     }
 
     public Vector3f getLocation(Vector3f store, float tickDelta) {
-        var prevLocation = Convert.toMinecraft(this.prevLocation);
-        var tickLocation = Convert.toMinecraft(this.tickLocation);
-        var lerp = RayonPlugin.getNmsTools().lerp(prevLocation, tickLocation, tickDelta);
-        return store.set(Convert.toBullet(lerp));
+        Vector3f lerp = MathShit.lerp(this.prevLocation, this.tickLocation, tickDelta);
+        return store.set(lerp);
     }
 
     public Quaternion getRotation(Quaternion store, float tickDelta) {
-        var prevRotation = Convert.toMinecraft(this.prevRotation);
-        var tickRotation= Convert.toMinecraft(this.tickRotation);
-        var slerp = RayonPlugin.getNmsTools().slerp(prevRotation, tickRotation, tickDelta);
-        return store.set(Convert.toBullet(slerp));
+        Quaternion slerp = MathShit.slerp(this.prevRotation, this.tickRotation, tickDelta);
+        return store.set(slerp);
     }
 
     public Vector3f getLocationDelta(Vector3f store) {
-        store.set(tickLocation.subtract(prevLocation));
-        return store;
+        return store.set(tickLocation.subtract(prevLocation));
     }
 
     public Vector3f getRotationDelta(Vector3f store) {
-        final var tickRotation = Convert.toMinecraft(this.tickRotation);
-        final var prevRotation = Convert.toMinecraft(this.prevRotation);
-        store.set(Convert.toBullet(RayonPlugin.getNmsTools().getRotationDelta(tickRotation, prevRotation)));
-        return store;
+        final var tickAngles = MathShit.toEulerAngles(this.tickRotation);
+        final var prevAngles = MathShit.toEulerAngles(this.prevRotation);
+        tickAngles.subtractLocal(prevAngles);
+        return store.set(tickAngles);
     }
 }

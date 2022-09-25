@@ -3,9 +3,6 @@ package dev.lazurite.rayon.impl.bullet.collision.body.shape;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.RayonPlugin;
-import dev.lazurite.rayon.impl.bullet.math.Convert;
-import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -132,8 +129,11 @@ public class Triangle {
                 transform(vertices[2].clone(), quaternion));
     }
 
-    private static Vector3f transform(Vector3f vector, Quaternion quaternion) {
-        Vector mcVector = RayonPlugin.getNmsTools().transform(Convert.toMinecraft(vector), Convert.toMinecraft(quaternion));
-        return Convert.toBullet(mcVector);
+    private static Vector3f transform(Vector3f vector, Quaternion rotation) {
+        Quaternion quaternion = new Quaternion(rotation);
+        quaternion.multLocal(new Quaternion(vector.x, vector.y, vector.z, 0.0F));
+        Quaternion quaternion2 = new Quaternion(-rotation.getX(), -rotation.getY(), -rotation.getZ(), rotation.getW());
+        quaternion.multLocal(quaternion2);
+        return new Vector3f(quaternion.getX(), quaternion.getY(), quaternion.getZ());
     }
 }

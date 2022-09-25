@@ -6,7 +6,7 @@ import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.collision.shapes.infos.IndexedMesh;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.impl.bullet.math.Convert;
+import dev.lazurite.rayon.utils.math.Convert;
 import dev.lazurite.rayon.nms.wrappers.AABBWrapper;
 
 import java.util.Collections;

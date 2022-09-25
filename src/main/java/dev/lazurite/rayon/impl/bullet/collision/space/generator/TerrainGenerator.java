@@ -5,7 +5,7 @@ import dev.lazurite.rayon.RayonPlugin;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.TerrainRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
-import dev.lazurite.rayon.impl.bullet.math.Convert;
+import dev.lazurite.rayon.utils.math.Convert;
 
 import java.util.HashSet;
 
