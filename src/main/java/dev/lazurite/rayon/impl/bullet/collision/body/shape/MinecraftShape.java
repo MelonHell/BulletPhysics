@@ -44,7 +44,7 @@ public sealed interface MinecraftShape permits MinecraftShape.Convex, MinecraftS
 
         @Override
         public List<Triangle> getTriangles(Quaternion quaternion) {
-            return Collections.unmodifiableList(this.triangles.stream().map(triangle -> triangle.transform(quaternion)).toList());
+            return this.triangles.stream().map(triangle -> triangle.transform(quaternion)).toList();
         }
 
         @Override

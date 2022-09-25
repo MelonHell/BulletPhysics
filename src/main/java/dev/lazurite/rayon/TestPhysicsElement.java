@@ -24,20 +24,21 @@ public class TestPhysicsElement implements PhysicsElement {
     public TestPhysicsElement(Location location) {
         this.world = location.getWorld();
         MinecraftSpace space = MinecraftSpace.get(location.getWorld());
-        float size = 0.25f;
+        float size = 5.25f;
         this.convex = MinecraftShape.convex(new BoundingBox(new Vector3f(), size, size, size));
-        MiniSkullModel miniSkullModel = new MiniSkullModel(MelonPacketLibApi.createGroup(location, AllPlayersGroup.INSTANCE), location, Rotation.IDENTITY);
+//        MiniSkullModel miniSkullModel = new MiniSkullModel(MelonPacketLibApi.createGroup(location, AllPlayersGroup.INSTANCE), location, Rotation.IDENTITY);
 
         this.rigidBody = new ElementRigidBody(this, space, convex, 10.0f, 0.25f, 1.0f, 0.5f) {
             @Override
             public void updateFrame() {
                 super.updateFrame();
-                Vector3f physicsLocation = getMotionState().getLocation(null);
-                Quaternion orientation = getMotionState().getOrientation((Quaternion) null);
-                Location testLoc = new Location(world, physicsLocation.x, physicsLocation.y, physicsLocation.z);
-                Rotation rotation = new Rotation(orientation.getZ(), orientation.getY(), orientation.getX(), orientation.getW(), false);
-                miniSkullModel.teleport(testLoc, rotation);
-                world.spawnParticle(Particle.WATER_BUBBLE, testLoc, 1);
+                HitboxRender.render(this, world);
+//                Vector3f physicsLocation = getMotionState().getLocation(null);
+//                Quaternion orientation = getMotionState().getOrientation((Quaternion) null);
+//                Location testLoc = new Location(world, physicsLocation.x, physicsLocation.y, physicsLocation.z);
+//                Rotation rotation = new Rotation(orientation.getZ(), orientation.getY(), orientation.getX(), orientation.getW(), false);
+//                miniSkullModel.teleport(testLoc, rotation);
+//                world.spawnParticle(Particle.WATER_BUBBLE, testLoc, 1);
             }
         };
         this.rigidBody.setPhysicsLocation(new Vector3f((float) location.getX(), (float) location.getY(), (float) location.getZ()));
