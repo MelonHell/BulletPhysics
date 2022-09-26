@@ -1,7 +1,6 @@
 package dev.lazurite.rayon.impl.bullet.thread;
 
 import dev.lazurite.rayon.RayonPlugin;
-import dev.lazurite.rayon.api.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +14,7 @@ import java.util.concurrent.Executor;
  * Calling {@link PhysicsThread#execute} adds a runnable to the queue of tasks and is the main way to execute code on
  * this thread. You can also execute code here by using {link PhysicsSpaceEvents}.
  * see PhysicsSpaceEvents
- * @see PhysicsElement
+ * see PhysicsElement
  * @see MinecraftSpace
  */
 public class PhysicsThread extends Thread implements Executor {

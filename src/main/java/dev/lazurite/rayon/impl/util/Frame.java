@@ -2,12 +2,11 @@ package dev.lazurite.rayon.impl.util;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.api.PhysicsElement;
 import dev.lazurite.rayon.utils.math.MathShit;
 
 /**
  * A {@link Frame} can be used for interpolation on the render thread.
- * {@link Frame}s are stored in {@link PhysicsElement}s and are updated
+ * {@link Frame}s are stored in {link PhysicsElement}s and are updated
  * each tick.
  */
 public class Frame {

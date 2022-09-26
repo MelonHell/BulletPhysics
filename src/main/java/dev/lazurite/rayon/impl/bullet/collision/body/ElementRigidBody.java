@@ -3,7 +3,6 @@ package dev.lazurite.rayon.impl.bullet.collision.body;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.api.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.utils.math.Convert;
@@ -15,7 +14,6 @@ import dev.lazurite.rayon.nms.wrappers.BlockPosWrapper;
 public class ElementRigidBody extends MinecraftRigidBody {
     public static final float SLEEP_TIME_IN_SECONDS = 2.0f;
 
-    protected final PhysicsElement element;
 
     private final Frame frame;
     private final Clock sleepTimer;
@@ -24,9 +22,8 @@ public class ElementRigidBody extends MinecraftRigidBody {
     private BuoyancyType buoyancyType;
     private DragType dragType;
 
-    public ElementRigidBody(PhysicsElement element, MinecraftSpace space, MinecraftShape.Convex shape, float mass, float dragCoefficient, float friction, float restitution) {
+    public ElementRigidBody(MinecraftSpace space, MinecraftShape.Convex shape, float mass, float dragCoefficient, float friction, float restitution) {
         super(space, shape, mass);
-        this.element = element;
         this.frame = new Frame();
         this.sleepTimer = new Clock();
 
@@ -37,22 +34,6 @@ public class ElementRigidBody extends MinecraftRigidBody {
         this.setBuoyancyType(BuoyancyType.WATER);
         this.setDragType(DragType.SIMPLE);
     }
-
-    public PhysicsElement getElement() {
-        return this.element;
-    }
-
-//    public void readTagInfo(CompoundTag tag) {
-//        this.setPhysicsRotation(Convert.toBullet(QuaternionHelper.fromTag(tag.getCompound("orientation"))));
-//        this.setLinearVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("linearVelocity"))));
-//        this.setAngularVelocity(Convert.toBullet(VectorHelper.fromTag(tag.getCompound("angularVelocity"))));
-////        this.setMass(tag.getFloat("mass"));
-////        this.setDragCoefficient(tag.getFloat("dragCoefficient"));
-////        this.setFriction(tag.getFloat("friction"));
-////        this.setRestitution(tag.getFloat("restitution"));
-////        this.setBuoyancyType(ElementRigidBody.BuoyancyType.values()[tag.getInt("buoyancyType")]);
-////        this.setDragType(ElementRigidBody.DragType.values()[tag.getInt("dragType")]);
-//    }
 
     public boolean terrainLoadingEnabled() {
         return this.terrainLoading && !this.isStatic();
