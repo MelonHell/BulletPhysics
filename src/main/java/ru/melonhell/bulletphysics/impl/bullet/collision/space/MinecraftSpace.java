@@ -10,7 +10,7 @@ import com.jme3.math.Vector3f;
 import ru.melonhell.bulletphysics.storage.RigidBodyDataStorage;
 import ru.melonhell.bulletphysics.storage.SpaceStorage;
 import ru.melonhell.bulletphysics.impl.bullet.collision.body.element.PhysicsElement;
-import ru.melonhell.bulletphysics.impl.bullet.collision.body.terrain.TerrainRigidBody;
+import ru.melonhell.bulletphysics.impl.bullet.collision.body.TerrainRigidBody;
 import ru.melonhell.bulletphysics.impl.bullet.collision.space.cache.ChunkCache;
 import ru.melonhell.bulletphysics.impl.bullet.collision.space.generator.TerrainGenerator;
 import ru.melonhell.bulletphysics.impl.bullet.thread.PhysicsThread;

@@ -2,7 +2,7 @@ package ru.melonhell.bulletphysics.impl.bullet.collision.space.generator;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.objects.PhysicsRigidBody;
-import ru.melonhell.bulletphysics.impl.bullet.collision.body.terrain.TerrainRigidBody;
+import ru.melonhell.bulletphysics.impl.bullet.collision.body.TerrainRigidBody;
 import ru.melonhell.bulletphysics.impl.bullet.collision.space.MinecraftSpace;
 import ru.melonhell.bulletphysics.utils.NmsUtils;
 import ru.melonhell.bulletphysics.utils.math.Convert;
@@ -33,14 +33,14 @@ public class TerrainGenerator {
                         if (NmsUtils.getNmsTools().getBlockId(blockData.blockState()) != NmsUtils.getNmsTools().getBlockId(terrain.getBlockState())) {
                             space.removeCollisionObject(terrain);
 
-                            final var terrain2 = TerrainRigidBody.from(blockData, space);
+                            final var terrain2 = TerrainRigidBody.from(blockData);
                             space.addCollisionObject(terrain2);
                             keep.add(terrain2);
                         } else {
                             keep.add(terrain);
                         }
                     }, () -> {
-                        final var terrain = TerrainRigidBody.from(blockData, space);
+                        final var terrain = TerrainRigidBody.from(blockData);
                         space.addCollisionObject(terrain);
                         keep.add(terrain);
                     });

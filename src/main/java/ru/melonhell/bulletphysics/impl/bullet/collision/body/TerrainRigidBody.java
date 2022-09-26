@@ -1,26 +1,27 @@
-package ru.melonhell.bulletphysics.impl.bullet.collision.body.terrain;
+package ru.melonhell.bulletphysics.impl.bullet.collision.body;
 
+import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import ru.melonhell.bulletphysics.impl.bullet.collision.body.shape.MinecraftShape;
 import ru.melonhell.bulletphysics.impl.bullet.collision.space.block.BlockProperty;
 import ru.melonhell.bulletphysics.impl.bullet.collision.space.cache.ChunkCache;
-import ru.melonhell.bulletphysics.impl.bullet.collision.space.MinecraftSpace;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
 import org.bukkit.block.BlockState;
 
-public class TerrainRigidBody extends MinecraftRigidBody {
+public class TerrainRigidBody extends PhysicsRigidBody {
     private final BlockPosWrapper blockPos;
     private final BlockState state;
 
-    public static TerrainRigidBody from(ChunkCache.BlockData blockData, MinecraftSpace space) {
+    public static TerrainRigidBody from(ChunkCache.BlockData blockData) {
         final var blockProperty = BlockProperty.getBlockProperty(blockData.blockState().getType());
         final var friction = blockProperty == null ? 0.75f : blockProperty.friction();
         final var restitution = blockProperty == null ? 0.25f : blockProperty.restitution();
-        return new TerrainRigidBody(space, blockData.shape(), new BlockPosWrapper(blockData.block()), blockData.blockState(), friction, restitution);
+        return new TerrainRigidBody(blockData.shape(), new BlockPosWrapper(blockData.block()), blockData.blockState(), friction, restitution);
     }
 
-    public TerrainRigidBody(MinecraftSpace space, MinecraftShape shape, BlockPosWrapper blockPos, BlockState blockState, float friction, float restitution) {
-        super(space, shape);
+    public TerrainRigidBody(MinecraftShape shape, BlockPosWrapper blockPos, BlockState blockState, float friction, float restitution) {
+        super((CollisionShape) shape, massForStatic);
         this.blockPos = blockPos;
         this.state = blockState;
 
