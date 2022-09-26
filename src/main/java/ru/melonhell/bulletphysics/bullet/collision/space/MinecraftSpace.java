@@ -1,4 +1,4 @@
-package ru.melonhell.bulletphysics.impl.bullet.collision.space;
+package ru.melonhell.bulletphysics.bullet.collision.space;
 
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
@@ -7,17 +7,19 @@ import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import ru.melonhell.bulletphysics.storage.RigidBodyDataStorage;
-import ru.melonhell.bulletphysics.storage.SpaceStorage;
-import ru.melonhell.bulletphysics.impl.bullet.collision.body.element.PhysicsElement;
-import ru.melonhell.bulletphysics.impl.bullet.collision.body.TerrainRigidBody;
-import ru.melonhell.bulletphysics.impl.bullet.collision.space.cache.ChunkCache;
-import ru.melonhell.bulletphysics.impl.bullet.collision.space.generator.TerrainGenerator;
-import ru.melonhell.bulletphysics.impl.bullet.thread.PhysicsThread;
-import ru.melonhell.bulletphysics.impl.event.ServerEventHandler;
-import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
 import lombok.Getter;
 import org.bukkit.World;
+import ru.melonhell.bulletphysics.bullet.collision.body.TerrainRigidBody;
+import ru.melonhell.bulletphysics.bullet.collision.body.element.PhysicsElement;
+import ru.melonhell.bulletphysics.bullet.collision.space.cache.ChunkCache;
+import ru.melonhell.bulletphysics.bullet.collision.space.cache.SimpleChunkCache;
+import ru.melonhell.bulletphysics.bullet.collision.space.generator.PressureGenerator;
+import ru.melonhell.bulletphysics.bullet.collision.space.generator.TerrainGenerator;
+import ru.melonhell.bulletphysics.bullet.thread.PhysicsThread;
+import ru.melonhell.bulletphysics.nms.NmsTools;
+import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
+import ru.melonhell.bulletphysics.storage.RigidBodyDataStorage;
+import ru.melonhell.bulletphysics.storage.SpaceStorage;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -45,20 +47,26 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     @Getter
     private final RigidBodyDataStorage rigidBodyDataStorage;
     @Getter
+    private final TerrainGenerator terrainGenerator;
+    @Getter
+    private final PressureGenerator pressureGenerator;
+    @Getter
     private final World world;
     @Getter
     private final ChunkCache chunkCache;
 
     private volatile boolean stepping;
 
-    public MinecraftSpace(PhysicsThread physicsThread, SpaceStorage spaceStorage, RigidBodyDataStorage rigidBodyDataStorage, World world) {
+    public MinecraftSpace(PhysicsThread physicsThread, SpaceStorage spaceStorage, RigidBodyDataStorage rigidBodyDataStorage, NmsTools nmsTools, TerrainGenerator terrainGenerator, PressureGenerator pressureGenerator, World world) {
         super(BroadphaseType.DBVT);
 
         this.physicsThread = physicsThread;
         this.spaceStorage = spaceStorage;
         this.rigidBodyDataStorage = rigidBodyDataStorage;
+        this.pressureGenerator = pressureGenerator;
+        this.terrainGenerator = terrainGenerator;
         this.world = world;
-        this.chunkCache = ChunkCache.create(this);
+        this.chunkCache = new SimpleChunkCache(this, nmsTools);
         this.terrainMap = new ConcurrentHashMap<>();
         this.setGravity(new Vector3f(0, -9.807f, 0));
         this.addCollisionListener(this);
@@ -96,7 +104,9 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
                     /* World Step Event */
 //                    Bukkit.getPluginManager().callEvent(new PhysicsSpaceStepEvent(this));
-                    ServerEventHandler.physicsSpaceStep(this);
+//                    ServerEventHandler.physicsSpaceStep(this);
+                    terrainGenerator.step(this);
+                    pressureGenerator.step(this);
 
                     /* Step the Simulation */
                     this.update(1 / 60f);

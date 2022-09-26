@@ -8,12 +8,12 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-import ru.melonhell.bulletphysics.impl.bullet.collision.body.shape.MinecraftShape;
-import ru.melonhell.bulletphysics.impl.bullet.collision.body.element.PhysicsElement;
-import ru.melonhell.bulletphysics.impl.bullet.collision.space.MinecraftSpace;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.springframework.stereotype.Component;
+import ru.melonhell.bulletphysics.bullet.collision.body.element.PhysicsElement;
+import ru.melonhell.bulletphysics.bullet.collision.body.shape.MinecraftShape;
+import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
 import ru.melonhell.bulletphysics.storage.RigidBodyDataStorage;
 import ru.melonhell.bulletphysics.storage.SpaceStorage;
 
@@ -23,6 +23,7 @@ import ru.melonhell.bulletphysics.storage.SpaceStorage;
 public class TestCommand extends BaseCommand {
     private final RigidBodyDataStorage rigidBodyDataStorage;
     private final SpaceStorage spaceStorage;
+
     @Subcommand("test")
     public void test(Player player, @Default("1") int count) {
         for (int i = 0; i < count; i++) {

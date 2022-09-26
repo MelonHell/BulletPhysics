@@ -1,9 +1,10 @@
-package ru.melonhell.bulletphysics.impl.bullet.collision.body.element;
+package ru.melonhell.bulletphysics.bullet.collision.body.element;
 
-import ru.melonhell.bulletphysics.impl.bullet.collision.space.MinecraftSpace;
+import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
 
 /**
  * A simple clock for keeping track of delta time in milliseconds and microseconds.
+ *
  * @see MinecraftSpace
  */
 public class Clock {

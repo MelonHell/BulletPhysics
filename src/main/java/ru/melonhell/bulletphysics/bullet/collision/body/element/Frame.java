@@ -1,4 +1,4 @@
-package ru.melonhell.bulletphysics.impl.bullet.collision.body.element;
+package ru.melonhell.bulletphysics.bullet.collision.body.element;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;

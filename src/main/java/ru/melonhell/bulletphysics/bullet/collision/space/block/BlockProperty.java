@@ -1,11 +1,11 @@
-package ru.melonhell.bulletphysics.impl.bullet.collision.space.block;
+package ru.melonhell.bulletphysics.bullet.collision.space.block;
 
 import org.bukkit.Material;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public record BlockProperty (float friction, float restitution, boolean collidable, boolean isFullBlock) {
+public record BlockProperty(float friction, float restitution, boolean collidable, boolean isFullBlock) {
     private static final Map<Material, BlockProperty> blockProperties = new ConcurrentHashMap<>();
 
     static {

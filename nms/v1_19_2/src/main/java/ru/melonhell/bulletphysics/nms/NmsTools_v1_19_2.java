@@ -1,8 +1,5 @@
 package ru.melonhell.bulletphysics.nms;
 
-import ru.melonhell.bulletphysics.nms.wrappers.AABBWrapper;
-import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
-import ru.melonhell.bulletphysics.nms.wrappers.FluidStateWrapper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FluidState;
@@ -14,9 +11,14 @@ import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.v1_19_R1.block.CraftBlock;
 import org.bukkit.craftbukkit.v1_19_R1.block.CraftBlockState;
 import org.bukkit.util.Vector;
+import org.springframework.stereotype.Component;
+import ru.melonhell.bulletphysics.nms.wrappers.AABBWrapper;
+import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
+import ru.melonhell.bulletphysics.nms.wrappers.FluidStateWrapper;
 
 import java.util.stream.Stream;
 
+@Component
 public class NmsTools_v1_19_2 implements NmsTools {
     @Override
     public Stream<BlockPosWrapper> betweenClosedStream(AABBWrapper aabb) {

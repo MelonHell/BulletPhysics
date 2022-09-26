@@ -1,24 +1,23 @@
-package ru.melonhell.bulletphysics.impl.bullet.collision.body.element;
+package ru.melonhell.bulletphysics.bullet.collision.body.element;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import ru.melonhell.bulletphysics.impl.bullet.collision.body.shape.MinecraftShape;
-import ru.melonhell.bulletphysics.impl.bullet.collision.space.MinecraftSpace;
+import lombok.Getter;
+import lombok.Setter;
+import ru.melonhell.bulletphysics.bullet.collision.body.shape.MinecraftShape;
+import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
 import ru.melonhell.bulletphysics.nms.wrappers.AABBWrapper;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
 import ru.melonhell.bulletphysics.utils.math.Convert;
-import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Setter
 public class PhysicsElement {
     public static final float SLEEP_TIME_IN_SECONDS = 2.0f;
-
-    private final PhysicsRigidBody rigidBody;
     protected final MinecraftSpace space;
+    private final PhysicsRigidBody rigidBody;
     private final Frame frame = new Frame();
     private final Clock sleepTimer = new Clock();
     private boolean terrainLoadingEnabled;

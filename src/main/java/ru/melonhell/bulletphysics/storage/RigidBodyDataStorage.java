@@ -2,7 +2,7 @@ package ru.melonhell.bulletphysics.storage;
 
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import org.springframework.stereotype.Component;
-import ru.melonhell.bulletphysics.impl.bullet.collision.body.element.PhysicsElement;
+import ru.melonhell.bulletphysics.bullet.collision.body.element.PhysicsElement;
 
 import java.util.HashMap;
 import java.util.Map;

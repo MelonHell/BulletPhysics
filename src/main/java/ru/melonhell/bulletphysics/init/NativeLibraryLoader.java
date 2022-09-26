@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package ru.melonhell.bulletphysics;
+package ru.melonhell.bulletphysics.init;
 
 import com.jme3.system.JmeSystem;
 import com.jme3.system.Platform;
@@ -47,18 +47,8 @@ import java.util.logging.Logger;
 @Component
 @RequiredArgsConstructor
 public final class NativeLibraryLoader {
-    private final JavaPlugin javaPlugin;
-
-    @PostConstruct
-    public void init() {
-        File libFile = new File(javaPlugin.getDataFolder(), NativeLibraryLoader.getName("Release", "Sp"));
-        libFile = NativeLibraryLoader.copyTmp(libFile);
-        if (!NativeLibraryLoader.load(libFile)) {
-            throw new RuntimeException("Lib is not loaded");
-        }
-    }
-
     final public static Logger logger = Logger.getLogger(NativeLibraryLoader.class.getName());
+    private final JavaPlugin javaPlugin;
 
     public static String getName(String buildType, String flavor) {
         assert buildType.equals("Debug") || buildType.equals("Release") :
@@ -93,6 +83,7 @@ public final class NativeLibraryLoader {
         }
         return res;
     }
+
     public static boolean load(File file) {
         String absoluteFilename = file.getAbsolutePath();
         boolean success = false;
@@ -107,5 +98,14 @@ public final class NativeLibraryLoader {
         }
 
         return success;
+    }
+
+    @PostConstruct
+    public void init() {
+        File libFile = new File(javaPlugin.getDataFolder(), NativeLibraryLoader.getName("Release", "Sp"));
+        libFile = NativeLibraryLoader.copyTmp(libFile);
+        if (!NativeLibraryLoader.load(libFile)) {
+            throw new RuntimeException("Lib is not loaded");
+        }
     }
 }

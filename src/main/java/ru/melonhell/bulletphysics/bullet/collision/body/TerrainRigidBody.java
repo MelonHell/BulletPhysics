@@ -1,24 +1,17 @@
-package ru.melonhell.bulletphysics.impl.bullet.collision.body;
+package ru.melonhell.bulletphysics.bullet.collision.body;
 
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Vector3f;
-import ru.melonhell.bulletphysics.impl.bullet.collision.body.shape.MinecraftShape;
-import ru.melonhell.bulletphysics.impl.bullet.collision.space.block.BlockProperty;
-import ru.melonhell.bulletphysics.impl.bullet.collision.space.cache.ChunkCache;
-import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
 import org.bukkit.block.BlockState;
+import ru.melonhell.bulletphysics.bullet.collision.body.shape.MinecraftShape;
+import ru.melonhell.bulletphysics.bullet.collision.space.block.BlockProperty;
+import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.BlockData;
+import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
 
 public class TerrainRigidBody extends PhysicsRigidBody {
     private final BlockPosWrapper blockPos;
     private final BlockState state;
-
-    public static TerrainRigidBody from(ChunkCache.BlockData blockData) {
-        final var blockProperty = BlockProperty.getBlockProperty(blockData.blockState().getType());
-        final var friction = blockProperty == null ? 0.75f : blockProperty.friction();
-        final var restitution = blockProperty == null ? 0.25f : blockProperty.restitution();
-        return new TerrainRigidBody(blockData.shape(), new BlockPosWrapper(blockData.block()), blockData.blockState(), friction, restitution);
-    }
 
     public TerrainRigidBody(MinecraftShape shape, BlockPosWrapper blockPos, BlockState blockState, float friction, float restitution) {
         super((CollisionShape) shape, massForStatic);
@@ -28,6 +21,13 @@ public class TerrainRigidBody extends PhysicsRigidBody {
         this.setFriction(friction);
         this.setRestitution(restitution);
         this.setPhysicsLocation(new Vector3f(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f));
+    }
+
+    public static TerrainRigidBody from(BlockData blockData) {
+        final var blockProperty = BlockProperty.getBlockProperty(blockData.blockState().getType());
+        final var friction = blockProperty == null ? 0.75f : blockProperty.friction();
+        final var restitution = blockProperty == null ? 0.25f : blockProperty.restitution();
+        return new TerrainRigidBody(blockData.shape(), new BlockPosWrapper(blockData.block()), blockData.blockState(), friction, restitution);
     }
 
     public BlockPosWrapper getBlockPos() {

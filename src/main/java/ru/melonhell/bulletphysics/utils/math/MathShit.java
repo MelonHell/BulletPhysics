@@ -63,12 +63,13 @@ public class MathShit {
         final var cosy_cosp = 1 - 2 * (q.getY() * q.getY() + q.getZ() * q.getZ());
         k = (float) Math.atan2(siny_cosp, cosy_cosp);
 
-        return new Vector3f(i, j ,k);
+        return new Vector3f(i, j, k);
     }
 
     public static double lerp(double delta, double start, double end) {
         return start + delta * (end - start);
     }
+
     public static Vector3f lerp(Vector3f vec1, Vector3f vec2, float delta) {
         return new Vector3f(
                 (float) lerp(delta, vec1.x, vec2.x),

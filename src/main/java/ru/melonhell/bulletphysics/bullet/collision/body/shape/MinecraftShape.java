@@ -1,4 +1,4 @@
-package ru.melonhell.bulletphysics.impl.bullet.collision.body.shape;
+package ru.melonhell.bulletphysics.bullet.collision.body.shape;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.collision.shapes.HullCollisionShape;
@@ -15,9 +15,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public sealed interface MinecraftShape permits MinecraftShape.Convex, MinecraftShape.Concave {
-    List<Triangle> getTriangles(Quaternion quaternion);
-    float getVolume();
-
     static Convex convex(AABBWrapper box) {
         return MinecraftShape.convex(Convert.toBullet(box));
     }
@@ -33,6 +30,10 @@ public sealed interface MinecraftShape permits MinecraftShape.Convex, MinecraftS
     static Concave concave(BoundingBox box) {
         return new Concave(Triangle.getMeshOf(box));
     }
+
+    List<Triangle> getTriangles(Quaternion quaternion);
+
+    float getVolume();
 
     final class Convex extends HullCollisionShape implements MinecraftShape {
         private final List<Triangle> triangles;
@@ -59,17 +60,17 @@ public sealed interface MinecraftShape permits MinecraftShape.Convex, MinecraftS
 
         public Concave(List<Triangle> triangles) {
             super(false,
-                ((Supplier<IndexedMesh>) () -> {
-                    final var vertices = triangles.stream().flatMap(triangle -> Stream.of(triangle.getVertices())).toArray(Vector3f[]::new);
-                    final var indices = new int[vertices.length];
+                    ((Supplier<IndexedMesh>) () -> {
+                        final var vertices = triangles.stream().flatMap(triangle -> Stream.of(triangle.getVertices())).toArray(Vector3f[]::new);
+                        final var indices = new int[vertices.length];
 
-                    for (var i = 0; i < vertices.length; i++) {
-                        indices[i] = i;
+                        for (var i = 0; i < vertices.length; i++) {
+                            indices[i] = i;
+                        }
+
+                        return new IndexedMesh(vertices, indices);
                     }
-
-                    return new IndexedMesh(vertices, indices);
-                }
-            ).get());
+                    ).get());
             this.triangles = triangles;
         }
 

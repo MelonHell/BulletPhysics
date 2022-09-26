@@ -1,9 +1,9 @@
-package ru.melonhell.bulletphysics.impl.bullet.thread;
+package ru.melonhell.bulletphysics.bullet.thread;
 
 import org.apache.logging.log4j.LogManager;
-import org.springframework.stereotype.Component;
-import ru.melonhell.bulletphysics.impl.bullet.collision.space.MinecraftSpace;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Component;
+import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -17,6 +17,7 @@ import java.util.concurrent.Executor;
  * this thread. You can also execute code here by using {link PhysicsSpaceEvents}.
  * see PhysicsSpaceEvents
  * see PhysicsElement
+ *
  * @see MinecraftSpace
  */
 @Component
@@ -54,6 +55,7 @@ public class PhysicsThread extends Thread implements Executor {
     /**
      * For queueing up tasks to be executed on this thread. A {@link MinecraftSpace}
      * object is provided within the consumer.
+     *
      * @param task the task to run
      */
     @Override

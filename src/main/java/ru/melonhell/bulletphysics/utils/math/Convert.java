@@ -2,9 +2,9 @@ package ru.melonhell.bulletphysics.utils.math;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector3f;
+import org.bukkit.util.Vector;
 import ru.melonhell.bulletphysics.nms.wrappers.AABBWrapper;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
-import org.bukkit.util.Vector;
 
 public class Convert {
     public static AABBWrapper toMinecraft(BoundingBox box) {

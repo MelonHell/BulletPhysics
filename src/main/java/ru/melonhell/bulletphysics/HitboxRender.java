@@ -3,11 +3,11 @@ package ru.melonhell.bulletphysics;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import ru.melonhell.bulletphysics.impl.bullet.collision.body.element.PhysicsElement;
-import ru.melonhell.bulletphysics.impl.bullet.collision.body.shape.Triangle;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
+import ru.melonhell.bulletphysics.bullet.collision.body.element.PhysicsElement;
+import ru.melonhell.bulletphysics.bullet.collision.body.shape.Triangle;
 
 import java.util.List;
 

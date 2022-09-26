@@ -1,13 +1,16 @@
-package ru.melonhell.bulletphysics.impl.bullet.collision.space.cache;
+package ru.melonhell.bulletphysics.bullet.collision.space.cache;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.objects.PhysicsRigidBody;
-import ru.melonhell.bulletphysics.impl.bullet.collision.body.shape.MinecraftShape;
-import ru.melonhell.bulletphysics.impl.bullet.collision.space.block.BlockProperty;
-import ru.melonhell.bulletphysics.impl.bullet.collision.space.MinecraftSpace;
+import org.bukkit.block.BlockState;
+import ru.melonhell.bulletphysics.bullet.collision.body.shape.MinecraftShape;
+import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
+import ru.melonhell.bulletphysics.bullet.collision.space.block.BlockProperty;
+import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.BlockData;
+import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.FluidColumn;
+import ru.melonhell.bulletphysics.nms.NmsTools;
 import ru.melonhell.bulletphysics.nms.wrappers.AABBWrapper;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
-import ru.melonhell.bulletphysics.utils.NmsUtils;
 import ru.melonhell.bulletphysics.utils.math.Convert;
 
 import java.util.ArrayList;
@@ -22,8 +25,11 @@ public class SimpleChunkCache implements ChunkCache {
     private final List<FluidColumn> fluidColumns;
     private final List<BlockPosWrapper> activePositions;
 
-    SimpleChunkCache(MinecraftSpace space) {
+    private final NmsTools nmsTools;
+
+    public SimpleChunkCache(MinecraftSpace space, NmsTools nmsTools) {
         this.space = space;
+        this.nmsTools = nmsTools;
         this.blockData = new ConcurrentHashMap<>();
         this.fluidColumns = new ArrayList<>();
         this.activePositions = new ArrayList<>();
@@ -33,9 +39,9 @@ public class SimpleChunkCache implements ChunkCache {
     public void loadFluidData(BlockPosWrapper blockPos) {
         final var world = space.getWorld();
 
-        if (!NmsUtils.getNmsTools().getFluidState(blockPos.toBlock(world)).isEmpty()) {
+        if (!nmsTools.getFluidState(blockPos.toBlock(world)).isEmpty()) {
             if (this.fluidColumns.stream().noneMatch(column -> column.contains(blockPos))) {
-                this.fluidColumns.add(new FluidColumn(blockPos.toBlock(world)));
+                this.fluidColumns.add(new FluidColumn(blockPos.toBlock(world), nmsTools));
             }
         }
     }
@@ -48,7 +54,7 @@ public class SimpleChunkCache implements ChunkCache {
         final var block = blockPos.toBlock(world);
         final var blockState = block.getState();
 
-        if (ChunkCache.isValidBlock(blockState)) {
+        if (isValidBlock(blockState)) {
             final var properties = BlockProperty.getBlockProperty(blockState.getType());
 
 //            if (!blockState.isCollisionShapeFullBlock(level, blockPos) || (properties != null && !properties.isFullBlock())) {
@@ -69,7 +75,7 @@ public class SimpleChunkCache implements ChunkCache {
 
 //            final var voxelShape = blockState.getCollisionShape(level, blockPos);
 //            final var boundingBox = voxelShape.isEmpty() ? new AABBWrapper(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.bounds();
-            AABBWrapper boundingBox = NmsUtils.getNmsTools().boundingBox(block);
+            AABBWrapper boundingBox = nmsTools.boundingBox(block);
             MinecraftShape.Convex shape = MinecraftShape.convex(boundingBox);
 
 
@@ -90,14 +96,14 @@ public class SimpleChunkCache implements ChunkCache {
 
             final var aabb = Convert.toMinecraft(rigidBody.boundingBox(new BoundingBox())).inflate(1.0f);
 
-            NmsUtils.getNmsTools().betweenClosedStream(aabb).forEach(blockPos -> {
+            nmsTools.betweenClosedStream(aabb).forEach(blockPos -> {
                 this.activePositions.add(blockPos);
 
                 this.getBlockData(blockPos).ifPresentOrElse(blockData -> {
                     final var blockState = blockPos.toBlock(world).getState();
 
 
-                    if (NmsUtils.getNmsTools().getBlockId(blockData.blockState()) != NmsUtils.getNmsTools().getBlockId(blockState)) {
+                    if (nmsTools.getBlockId(blockData.blockState()) != nmsTools.getBlockId(blockState)) {
                         loadBlockData(blockPos);
                     }
                 }, () -> loadBlockData(blockPos));
@@ -141,5 +147,17 @@ public class SimpleChunkCache implements ChunkCache {
         }
 
         return Optional.empty();
+    }
+
+    boolean isValidBlock(BlockState blockState) {
+        if (blockState == null) {
+            return false;
+        }
+
+        final var block = blockState.getType();
+        final var properties = BlockProperty.getBlockProperty(block);
+
+        if (properties != null) return properties.collidable();
+        return nmsTools.collidableCheck(blockState);
     }
 }

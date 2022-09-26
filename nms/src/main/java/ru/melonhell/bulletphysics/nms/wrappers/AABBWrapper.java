@@ -56,10 +56,9 @@ public class AABBWrapper {
     }
 
     public Vector getCenter() {
-        return new Vector(lerp(0.5D, this.minX, this.maxX), lerp(0.5D, this.minY, this.maxY), lerp(0.5D, this.minZ, this.maxZ));
-    }
-
-    public static double lerp(double delta, double start, double end) {
-        return start + delta * (end - start);
+        double x = (this.minX + this.maxX) / 2.0;
+        double y = (this.minY + this.maxY) / 2.0;
+        double z = (this.minZ + this.maxZ) / 2.0;
+        return new Vector(x, y, z);
     }
 }

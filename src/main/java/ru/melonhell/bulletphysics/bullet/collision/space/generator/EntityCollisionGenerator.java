@@ -1,6 +1,6 @@
-package ru.melonhell.bulletphysics.impl.bullet.collision.space.generator;
+package ru.melonhell.bulletphysics.bullet.collision.space.generator;
 
-import ru.melonhell.bulletphysics.impl.bullet.collision.space.MinecraftSpace;
+import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
 
 public class EntityCollisionGenerator {
     public static void step(MinecraftSpace space) {

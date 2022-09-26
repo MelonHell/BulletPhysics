@@ -1,12 +1,13 @@
-package ru.melonhell.bulletphysics.impl.bullet.collision.space.generator;
+package ru.melonhell.bulletphysics.bullet.collision.space.generator;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import ru.melonhell.bulletphysics.impl.bullet.collision.body.shape.Triangle;
-import ru.melonhell.bulletphysics.impl.bullet.collision.body.element.PhysicsElement;
-import ru.melonhell.bulletphysics.impl.bullet.collision.space.MinecraftSpace;
+import org.springframework.stereotype.Component;
+import ru.melonhell.bulletphysics.bullet.collision.body.element.PhysicsElement;
+import ru.melonhell.bulletphysics.bullet.collision.body.shape.Triangle;
+import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
 import ru.melonhell.bulletphysics.utils.math.Convert;
 
@@ -17,21 +18,22 @@ import java.util.List;
 /**
  * TODO This class is messy af.
  */
+@Component
 public class PressureGenerator {
-    public static final float STOPPING_TIME = 2; // number of time steps to apply slamming force on fluid collision
+    public final float STOPPING_TIME = 2; // number of time steps to apply slamming force on fluid collision
 
     // Fluid-Related Constants
-    public static final float WATER_DENSITY = 1000f;       // kg/m^3
+    public final float WATER_DENSITY = 1000f;       // kg/m^3
 
     // Gas-Related Constants
-    public static final float AIR_DENSITY = 1.225f;           // kg/m^3
-    public static final float GAS_CONSTANT = 8.3144598f;      // J/(mol·K)
-    public static final float MOLAR_MASS_OF_AIR = 0.0289644f; // kg/mol
-    public static final float SEA_LEVEL_PRESSURE = 101_325f;  // Pa
-    public static final float TEMPERATURE = 300;              // K
-    public static final int SEA_LEVEL = 62;                   // m
+    public final float AIR_DENSITY = 1.225f;           // kg/m^3
+    public final float GAS_CONSTANT = 8.3144598f;      // J/(mol·K)
+    public final float MOLAR_MASS_OF_AIR = 0.0289644f; // kg/mol
+    public final float SEA_LEVEL_PRESSURE = 101_325f;  // Pa
+    public final float TEMPERATURE = 300;              // K
+    public final int SEA_LEVEL = 62;                   // m
 
-    public static void step(MinecraftSpace space) {
+    public void step(MinecraftSpace space) {
         final var chunkCache = space.getChunkCache();
         final var timeStep = space.getAccuracy();
         final var gravity = space.getGravity(new Vector3f());
@@ -201,7 +203,7 @@ public class PressureGenerator {
         }
     }
 
-    public static float getAddedMassForceAdjustment(List<Triangle> triangles, float mass) {
+    public float getAddedMassForceAdjustment(List<Triangle> triangles, float mass) {
         final var n = triangles.size();
         final var sum = triangles.stream().mapToDouble(triangle -> triangle.getArea().length() * triangle.getCentroid().length()).sum();
         final var addedMass = WATER_DENSITY / (6 * n) * sum;

@@ -1,10 +1,10 @@
 package ru.melonhell.bulletphysics.nms;
 
-import ru.melonhell.bulletphysics.nms.wrappers.AABBWrapper;
-import ru.melonhell.bulletphysics.nms.wrappers.FluidStateWrapper;
 import lombok.experimental.UtilityClass;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
+import ru.melonhell.bulletphysics.nms.wrappers.AABBWrapper;
+import ru.melonhell.bulletphysics.nms.wrappers.FluidStateWrapper;
 
 @UtilityClass
 public class NmsWrapUtils_v1_19_2 {
