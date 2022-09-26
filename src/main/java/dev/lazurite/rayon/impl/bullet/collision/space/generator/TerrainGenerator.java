@@ -1,8 +1,8 @@
 package dev.lazurite.rayon.impl.bullet.collision.space.generator;
 
 import com.jme3.bounding.BoundingBox;
+import com.jme3.bullet.objects.PhysicsRigidBody;
 import dev.lazurite.rayon.RayonPlugin;
-import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.TerrainRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.utils.math.Convert;
@@ -18,8 +18,9 @@ public class TerrainGenerator {
         final var chunkCache = space.getChunkCache();
         final var keep = new HashSet<TerrainRigidBody>();
 
-        for (var rigidBody : space.getRigidBodiesByClass(ElementRigidBody.class)) {
-            if (!rigidBody.terrainLoadingEnabled() || !rigidBody.isActive()) {
+        for (var elementRigidBodyData : space.getElementRigidBodyDataList()) {
+            PhysicsRigidBody rigidBody = elementRigidBodyData.getRigidBody();
+            if (!elementRigidBodyData.isTerrainLoadingEnabled() || !rigidBody.isActive()) {
                 continue;
             }
 

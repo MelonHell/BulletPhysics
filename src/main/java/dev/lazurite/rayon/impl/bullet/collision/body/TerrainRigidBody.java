@@ -46,8 +46,4 @@ public class TerrainRigidBody extends MinecraftRigidBody {
         return false;
     }
 
-    @Override
-    public Vector3f getOutlineColor() {
-        return new Vector3f(0.25f, 0.25f, 1.0f);
-    }
 }

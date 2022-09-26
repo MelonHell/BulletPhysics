@@ -7,9 +7,10 @@ import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import dev.lazurite.rayon.RigidBodyDataStorage;
 import dev.lazurite.rayon.SpaceStorage;
-import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.TerrainRigidBody;
+import dev.lazurite.rayon.impl.bullet.collision.body.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.collision.space.cache.ChunkCache;
 import dev.lazurite.rayon.impl.bullet.collision.space.generator.TerrainGenerator;
 import dev.lazurite.rayon.impl.bullet.thread.PhysicsThread;
@@ -78,7 +79,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      * This method performs the following steps:
      * <ul>
      *     <li>Fires world step events in {link PhysicsSpaceEvents}.</li>
-     *     <li>Steps {@link ElementRigidBody}s.</li>
+     *     <li>Steps {link ElementRigidBody}s.</li>
      *     <li>Steps the simulation asynchronously.</li>
      *     <li>Triggers collision events.</li>
      * </ul>
@@ -90,7 +91,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      * see PhysicsSpaceEvents
      */
     public void step() {
-        MinecraftSpace.get(level).getRigidBodiesByClass(ElementRigidBody.class).forEach(ElementRigidBody::updateFrame);
+        MinecraftSpace.get(level).getElementRigidBodyDataList().forEach(PhysicsElement::updateFrame);
 
         if (!isStepping() && !isEmpty()) {
             this.stepping = true;
@@ -119,18 +120,18 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     @Override
     public void addCollisionObject(PhysicsCollisionObject collisionObject) {
         if (!collisionObject.isInWorld()) {
-            if (collisionObject instanceof ElementRigidBody rigidBody) {
+            PhysicsElement physicsElement = RigidBodyDataStorage.get(collisionObject);
+            if (physicsElement != null) {
 
 //                Bukkit.getPluginManager().callEvent(new PhysicsSpaceElementAddedEvent(this, rigidBody));
-                ServerEventHandler.physicsSpaceElementAdded(rigidBody);
 
-                if (!rigidBody.isInWorld()) {
-                    rigidBody.activate();
-                    rigidBody.getFrame().set(
-                            rigidBody.getPhysicsLocation(new Vector3f()),
-                            rigidBody.getPhysicsLocation(new Vector3f()),
-                            rigidBody.getPhysicsRotation(new Quaternion()),
-                            rigidBody.getPhysicsRotation(new Quaternion()));
+                if (!collisionObject.isInWorld()) {
+                    collisionObject.activate(true);
+                    physicsElement.getFrame().set(
+                            collisionObject.getPhysicsLocation(new Vector3f()),
+                            collisionObject.getPhysicsLocation(new Vector3f()),
+                            collisionObject.getPhysicsRotation(new Quaternion()),
+                            collisionObject.getPhysicsRotation(new Quaternion()));
                 }
             } else if (collisionObject instanceof TerrainRigidBody terrain) {
                 this.terrainMap.put(terrain.getBlockPos(), terrain);
@@ -145,7 +146,8 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         if (collisionObject.isInWorld()) {
             super.removeCollisionObject(collisionObject);
 
-            if (collisionObject instanceof ElementRigidBody rigidBody) {
+            PhysicsElement physicsElement = RigidBodyDataStorage.get(collisionObject);
+            if (physicsElement != null) {
 //                Bukkit.getPluginManager().callEvent(new PhysicsSpaceElementRemovedEvent(this, rigidBody));
             } else if (collisionObject instanceof TerrainRigidBody terrain) {
                 this.removeTerrainObjectAt(terrain.getBlockPos());
@@ -164,13 +166,13 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     }
 
     public void wakeNearbyElementRigidBodies(BlockPosWrapper blockPos) {
-        for (var rigidBody : getRigidBodiesByClass(ElementRigidBody.class)) {
-            if (!rigidBody.terrainLoadingEnabled()) {
+        for (var elementRigidBodyData : getElementRigidBodyDataList()) {
+            if (!elementRigidBodyData.isTerrainLoadingEnabled()) {
                 continue;
             }
 
-            if (rigidBody.isNear(blockPos)) {
-                rigidBody.activate();
+            if (elementRigidBodyData.isNear(blockPos)) {
+                elementRigidBodyData.getRigidBody().activate();
             }
         }
     }
@@ -191,16 +193,13 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         }
     }
 
-    public <T> List<T> getRigidBodiesByClass(Class<T> type) {
-        var out = new ArrayList<T>();
-
+    public List<PhysicsElement> getElementRigidBodyDataList() {
+        List<PhysicsElement> list = new ArrayList<>();
         for (var body : getRigidBodyList()) {
-            if (type.isAssignableFrom(body.getClass())) {
-                out.add(type.cast(body));
-            }
+            PhysicsElement physicsElement = RigidBodyDataStorage.get(body);
+            if (physicsElement != null) list.add(physicsElement);
         }
-
-        return out;
+        return list;
     }
 
     /**
@@ -211,18 +210,18 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     @Override
     public void collision(PhysicsCollisionEvent event) {
         float impulse = event.getAppliedImpulse();
-
-        /* Element on Element */
-        if (event.getObjectA() instanceof ElementRigidBody rigidBodyA && event.getObjectB() instanceof ElementRigidBody rigidBodyB) {
-//            Bukkit.getPluginManager().callEvent(new ElementCollisionEvent(rigidBodyA.getElement(), rigidBodyB.getElement(), impulse));
-        }
-        /* Block on Element */
-        else if (event.getObjectA() instanceof TerrainRigidBody terrain && event.getObjectB() instanceof ElementRigidBody rigidBody) {
-//            Bukkit.getPluginManager().callEvent(new BlockCollisionEvent(rigidBody.getElement(), terrain, impulse));
-        }
-        /* Element on Block */
-        else if (event.getObjectA() instanceof ElementRigidBody rigidBody && event.getObjectB() instanceof TerrainRigidBody terrain) {
-//            Bukkit.getPluginManager().callEvent(new BlockCollisionEvent(rigidBody.getElement(), terrain, impulse));
-        }
+//
+//        /* Element on Element */
+//        if (event.getObjectA() instanceof ElementRigidBody rigidBodyA && event.getObjectB() instanceof ElementRigidBody rigidBodyB) {
+////            Bukkit.getPluginManager().callEvent(new ElementCollisionEvent(rigidBodyA.getElement(), rigidBodyB.getElement(), impulse));
+//        }
+//        /* Block on Element */
+//        else if (event.getObjectA() instanceof TerrainRigidBody terrain && event.getObjectB() instanceof ElementRigidBody rigidBody) {
+////            Bukkit.getPluginManager().callEvent(new BlockCollisionEvent(rigidBody.getElement(), terrain, impulse));
+//        }
+//        /* Element on Block */
+//        else if (event.getObjectA() instanceof ElementRigidBody rigidBody && event.getObjectB() instanceof TerrainRigidBody terrain) {
+////            Bukkit.getPluginManager().callEvent(new BlockCollisionEvent(rigidBody.getElement(), terrain, impulse));
+//        }
     }
 }

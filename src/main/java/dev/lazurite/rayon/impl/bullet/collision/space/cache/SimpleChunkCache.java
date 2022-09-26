@@ -1,14 +1,14 @@
 package dev.lazurite.rayon.impl.bullet.collision.space.cache;
 
 import com.jme3.bounding.BoundingBox;
+import com.jme3.bullet.objects.PhysicsRigidBody;
 import dev.lazurite.rayon.RayonPlugin;
-import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
 import dev.lazurite.rayon.impl.bullet.collision.space.block.BlockProperty;
-import dev.lazurite.rayon.utils.math.Convert;
 import dev.lazurite.rayon.nms.wrappers.AABBWrapper;
 import dev.lazurite.rayon.nms.wrappers.BlockPosWrapper;
+import dev.lazurite.rayon.utils.math.Convert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,8 +82,9 @@ public class SimpleChunkCache implements ChunkCache {
         final var world = space.getLevel();
         this.activePositions.clear();
 
-        for (var rigidBody : space.getRigidBodiesByClass(ElementRigidBody.class)) {
-            if (!rigidBody.terrainLoadingEnabled() || !rigidBody.isActive()) {
+        for (var elementRigidBodyData : space.getElementRigidBodyDataList()) {
+            PhysicsRigidBody rigidBody = elementRigidBodyData.getRigidBody();
+            if (!elementRigidBodyData.isTerrainLoadingEnabled() || !rigidBody.isActive()) {
                 continue;
             }
 

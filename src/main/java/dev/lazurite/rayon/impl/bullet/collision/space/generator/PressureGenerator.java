@@ -1,13 +1,14 @@
 package dev.lazurite.rayon.impl.bullet.collision.space.generator;
 
 import com.jme3.bounding.BoundingBox;
+import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.Triangle;
+import dev.lazurite.rayon.impl.bullet.collision.body.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
-import dev.lazurite.rayon.utils.math.Convert;
 import dev.lazurite.rayon.nms.wrappers.BlockPosWrapper;
+import dev.lazurite.rayon.utils.math.Convert;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,9 +41,10 @@ public class PressureGenerator {
         final var angularVelocity = new Vector3f();
         final var rotation = new Quaternion();
 
-        for (var rigidBody : space.getRigidBodiesByClass(ElementRigidBody.class)) {
-            if (!rigidBody.isActive() || (rigidBody.getBuoyancyType() == ElementRigidBody.BuoyancyType.NONE && rigidBody.getDragType() == ElementRigidBody.DragType.NONE)) {
-                rigidBody.getSleepTimer().reset();
+        for (var elementRigidBodyData : space.getElementRigidBodyDataList()) {
+            PhysicsRigidBody rigidBody = elementRigidBodyData.getRigidBody();
+            if (!rigidBody.isActive() || (elementRigidBodyData.getBuoyancyType() == PhysicsElement.BuoyancyType.NONE && elementRigidBodyData.getDragType() == PhysicsElement.DragType.NONE)) {
+                elementRigidBodyData.getSleepTimer().reset();
                 continue;
             }
 
@@ -52,19 +54,19 @@ public class PressureGenerator {
             rigidBody.getPhysicsRotation(rotation);
 
             if (linearVelocity.length() < rigidBody.getLinearSleepingThreshold() && angularVelocity.length() < rigidBody.getAngularSleepingThreshold()) {
-                if (rigidBody.getSleepTimer().get() > ElementRigidBody.SLEEP_TIME_IN_SECONDS) {
+                if (elementRigidBodyData.getSleepTimer().get() > PhysicsElement.SLEEP_TIME_IN_SECONDS) {
                     rigidBody.setDeactivationTime(2.0f);
                     continue;
                 }
             } else {
-                rigidBody.getSleepTimer().reset();
+                elementRigidBodyData.getSleepTimer().reset();
             }
 
             final var mass = rigidBody.getMass();
-            final var density = mass / rigidBody.getMinecraftShape().getVolume();
-            final var dragCoefficient = rigidBody.getDragCoefficient();
+            final var density = mass / elementRigidBodyData.getMinecraftShape().getVolume();
+            final var dragCoefficient = elementRigidBodyData.getDragCoefficient();
 
-            final var triangles = rigidBody.getMinecraftShape().getTriangles(rotation);
+            final var triangles = elementRigidBodyData.getMinecraftShape().getTriangles(rotation);
             final var crossSectionalAreas = new HashMap<Triangle, Float>();
             final var submergedTriangles = new ArrayList<Triangle>();
             float totalCrossSectionalArea = 0.0f;
@@ -124,7 +126,7 @@ public class PressureGenerator {
                     });
 
                     /* Do water buoyancy */
-                    if (rigidBody.isWaterBuoyancyEnabled()) {
+                    if (elementRigidBodyData.isWaterBuoyancyEnabled()) {
                         /* Check to make sure the triangle centroid is actually submerged */
                         final var pressure = gravity.y * WATER_DENSITY * waterHeight;
                         final var buoyantForce = new Vector3f(area).multLocal(pressure);
@@ -135,7 +137,7 @@ public class PressureGenerator {
                     }
 
                     /* Do water drag */
-                    if (rigidBody.isWaterDragEnabled()) {
+                    if (elementRigidBodyData.isWaterDragEnabled()) {
                         final var tangentialVelocity = new Vector3f(angularVelocity).cross(centroid); // angular velocity converted to linear parallel to edge of circle (tangential)
                         final var netVelocity = new Vector3f(tangentialVelocity).addLocal(linearVelocity); // total linear + tangential velocity
 
@@ -166,7 +168,7 @@ public class PressureGenerator {
 //                            }
 
                     /* Do (complex) air drag */
-                    if (rigidBody.isAirDragEnabled()) {
+                    if (elementRigidBodyData.isAirDragEnabled()) {
                         /* air_density_at_sea_level * e^(gravity * molar_mass_of_air * sea_level / (gas_constant * temperature)) */
                         /* 1.2 * e^(-9.8 * 0.0289644 * 62 / (8.3144598 * 300) */
                         final var airDensity = (float) (AIR_DENSITY * Math.exp(MOLAR_MASS_OF_AIR * gravity.y * (SEA_LEVEL - location.y - centroid.y) / (GAS_CONSTANT * TEMPERATURE)));
@@ -187,7 +189,7 @@ public class PressureGenerator {
             }
 
             /* Do (simple) air drag */
-            if (rigidBody.getDragType() == ElementRigidBody.DragType.SIMPLE) {
+            if (elementRigidBodyData.getDragType() == PhysicsElement.DragType.SIMPLE) {
                 final var box = rigidBody.getCollisionShape().boundingBox(new Vector3f(), new Quaternion(), new BoundingBox());
                 final var area = box.getExtent(new Vector3f()).lengthSquared();
                 final var dragForce = new Vector3f(linearVelocity.normalize()).multLocal(-0.5f * area * dragCoefficient * AIR_DENSITY * linearVelocity.lengthSquared());

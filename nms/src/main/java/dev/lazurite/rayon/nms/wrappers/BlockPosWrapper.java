@@ -22,22 +22,6 @@ public class BlockPosWrapper {
         this.z = block.getZ();
     }
 
-    public BlockPosWrapper above() {
-        return new BlockPosWrapper(this.getX(), this.getY() + 1, this.getZ()); // Paper - Optimize BlockPosition
-    }
-
-    public BlockPosWrapper above(int distance) {
-        return distance == 0 ? this : new BlockPosWrapper(this.getX(), this.getY() + distance, this.getZ()); // Paper - Optimize BlockPosition
-    }
-
-    public BlockPosWrapper below() {
-        return new BlockPosWrapper(this.getX(), this.getY() - 1, this.getZ()); // Paper - Optimize BlockPosition
-    }
-
-    public BlockPosWrapper below(int i) {
-        return i == 0 ? this : new BlockPosWrapper(this.getX(), this.getY() - i, this.getZ()); // Paper - Optimize BlockPosition
-    }
-
     public Block toBlock(World world) {
         return world.getBlockAt(x, y, z);
     }
