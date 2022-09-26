@@ -25,7 +25,7 @@ allprojects {
         }
     }
     dependencies {
-        compileOnly("ru.spliterash:spring-spigot:1.0.2")
+        compileOnly("ru.spliterash:spring-spigot:1.0.5")
     }
 }
 
