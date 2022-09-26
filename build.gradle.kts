@@ -14,26 +14,27 @@ allprojects {
         maven("https://papermc.io/repo/repository/maven-public/")
         maven("https://lazurite.dev/releases")
         maven("https://repo.aikar.co/content/groups/aikar/")
+        maven {
+            url = uri("https://nexus.spliterash.ru/repository/all/")
+            credentials {
+                username = findProperty("SPLITERASH_NEXUS_USR")?.toString()
+                password = findProperty("SPLITERASH_NEXUS_PSW")?.toString()
+            }
+        }
     }
 }
 
-//project(":nms").subprojects.forEach {
-//    rootProject.dependencies {
-//        api(project(it.path, "reobf"))
-//    }
-//}
-
 bukkit {
-    name = "Rayon"
-    main = "dev.lazurite.rayon.RayonPlugin"
+    name = "BulletPhysics"
+    main = "ru.melonhell.bulletphysics.init.BulletPhysicsPlugin"
     apiVersion = "1.13"
     authors = listOf("MelonHell")
+    depend = listOf("SpringSpigot")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT")
-//    paperDevBundle("1.19.2-R0.1-SNAPSHOT")
-    compileOnly(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    compileOnly("ru.spliterash:spring-spigot:1.0.2")
     implementation("com.github.stephengold:Libbulletjme:16.2.1")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
     api(project(":nms"))
