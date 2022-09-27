@@ -28,9 +28,8 @@ public class TestCommand extends BaseCommand {
     public void test(Player player, @Default("1") int count) {
         for (int i = 0; i < count; i++) {
             MinecraftSpace space = spaceStorage.get(player.getWorld());
-            float size = 5.25f;
+            float size = 2f;
             MinecraftShape.Convex convex = MinecraftShape.convex(new BoundingBox(new Vector3f(), size, size, size));
-            //        MiniSkullModel miniSkullModel = new MiniSkullModel(MelonPacketLibApi.createGroup(location, AllPlayersGroup.INSTANCE), location, Rotation.IDENTITY);
 
             PhysicsRigidBody rigidBody = new PhysicsRigidBody(convex);
             PhysicsElement physicsElement = new PhysicsElement(rigidBody, space) {
