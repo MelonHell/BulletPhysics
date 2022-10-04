@@ -1,15 +1,21 @@
+import groovy.util.Node
+import groovy.util.NodeList
+
 plugins {
-    id("java-library")
+    `java-library`
+    `maven-publish`
     id("io.freefair.lombok") version "6.3.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.2"
 }
 
+group = "ru.melonhell"
+
 allprojects {
     apply(plugin = "java-library")
     apply(plugin = "io.freefair.lombok")
 
-    version = "SNAPSHOT"
+    version = "1.0.0"
 
     repositories {
         mavenCentral()
@@ -63,5 +69,42 @@ tasks {
     }
     jar {
         enabled = false
+    }
+    withType<GenerateModuleMetadata> {
+        enabled = false
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            artifactId = rootProject.name
+
+            from(components["java"])
+            setArtifacts(listOf(tasks.shadowJar))
+
+            pom {
+                withXml {
+                    val root = asNode()
+                    val dependenciesNodeList = root.get("dependencies") as NodeList
+                    if (!dependenciesNodeList.isEmpty()) {
+                        val dependenciesNode = dependenciesNodeList[0] as Node
+
+                        root.remove(dependenciesNode)
+                    }
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "nexus"
+            url = uri("https://nexus.spliterash.ru/repository/" + rootProject.name)
+            credentials {
+                username = findProperty("SPLITERASH_NEXUS_USR")?.toString()
+                password = findProperty("SPLITERASH_NEXUS_PSW")?.toString()
+            }
+        }
     }
 }
