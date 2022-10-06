@@ -18,7 +18,6 @@ import ru.melonhell.bulletphysics.bullet.collision.space.generator.TerrainGenera
 import ru.melonhell.bulletphysics.bullet.thread.PhysicsThread;
 import ru.melonhell.bulletphysics.nms.NmsTools;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
-import ru.melonhell.bulletphysics.storage.RigidBodyDataStorage;
 import ru.melonhell.bulletphysics.storage.SpaceStorage;
 
 import java.util.*;
@@ -40,12 +39,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
     private final CompletableFuture[] futures = new CompletableFuture[3];
     private final Map<BlockPosWrapper, TerrainRigidBody> terrainMap;
+    private final Map<PhysicsCollisionObject, PhysicsElement> physicsElementMap = new HashMap<>();
     @Getter
     private final PhysicsThread physicsThread;
     @Getter
     private final SpaceStorage spaceStorage;
-    @Getter
-    private final RigidBodyDataStorage rigidBodyDataStorage;
     @Getter
     private final TerrainGenerator terrainGenerator;
     @Getter
@@ -57,12 +55,11 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
     private volatile boolean stepping;
 
-    public MinecraftSpace(PhysicsThread physicsThread, SpaceStorage spaceStorage, RigidBodyDataStorage rigidBodyDataStorage, NmsTools nmsTools, TerrainGenerator terrainGenerator, PressureGenerator pressureGenerator, World world) {
+    public MinecraftSpace(PhysicsThread physicsThread, SpaceStorage spaceStorage, NmsTools nmsTools, TerrainGenerator terrainGenerator, PressureGenerator pressureGenerator, World world) {
         super(BroadphaseType.DBVT);
 
         this.physicsThread = physicsThread;
         this.spaceStorage = spaceStorage;
-        this.rigidBodyDataStorage = rigidBodyDataStorage;
         this.pressureGenerator = pressureGenerator;
         this.terrainGenerator = terrainGenerator;
         this.world = world;
@@ -89,7 +86,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      * see PhysicsSpaceEvents
      */
     public void step() {
-        spaceStorage.get(world).getElementRigidBodyDataList().forEach(PhysicsElement::updateFrame);
+        getElementRigidBodyDataList().forEach(PhysicsElement::updateFrame);
 
         if (!isStepping() && !isEmpty()) {
             this.stepping = true;
@@ -117,10 +114,15 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         }
     }
 
+    public void addPhysicsElement(PhysicsElement element) {
+        addCollisionObject(element.getRigidBody());
+        physicsElementMap.put(element.getRigidBody(), element);
+    }
+
     @Override
     public void addCollisionObject(PhysicsCollisionObject collisionObject) {
         if (!collisionObject.isInWorld()) {
-            PhysicsElement physicsElement = rigidBodyDataStorage.get(collisionObject);
+            PhysicsElement physicsElement = physicsElementMap.get(collisionObject);
             if (physicsElement != null) {
 
 //                Bukkit.getPluginManager().callEvent(new PhysicsSpaceElementAddedEvent(this, rigidBody));
@@ -141,12 +143,17 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         }
     }
 
+    public void removePhysicsElement(PhysicsElement element) {
+        removeCollisionObject(element.getRigidBody());
+        physicsElementMap.remove(element.getRigidBody());
+    }
+
     @Override
     public void removeCollisionObject(PhysicsCollisionObject collisionObject) {
         if (collisionObject.isInWorld()) {
             super.removeCollisionObject(collisionObject);
 
-            PhysicsElement physicsElement = rigidBodyDataStorage.get(collisionObject);
+            PhysicsElement physicsElement = physicsElementMap.get(collisionObject);
             if (physicsElement != null) {
 //                Bukkit.getPluginManager().callEvent(new PhysicsSpaceElementRemovedEvent(this, rigidBody));
             } else if (collisionObject instanceof TerrainRigidBody terrain) {
@@ -196,7 +203,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     public List<PhysicsElement> getElementRigidBodyDataList() {
         List<PhysicsElement> list = new ArrayList<>();
         for (var body : getRigidBodyList()) {
-            PhysicsElement physicsElement = rigidBodyDataStorage.get(body);
+            PhysicsElement physicsElement = physicsElementMap.get(body);
             if (physicsElement != null) list.add(physicsElement);
         }
         return list;

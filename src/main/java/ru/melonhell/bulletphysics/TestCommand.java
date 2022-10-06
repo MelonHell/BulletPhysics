@@ -14,14 +14,12 @@ import org.springframework.stereotype.Component;
 import ru.melonhell.bulletphysics.bullet.collision.body.element.PhysicsElement;
 import ru.melonhell.bulletphysics.bullet.collision.body.shape.MinecraftShape;
 import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
-import ru.melonhell.bulletphysics.storage.RigidBodyDataStorage;
 import ru.melonhell.bulletphysics.storage.SpaceStorage;
 
 @Component
 @CommandAlias("bulletphysics")
 @RequiredArgsConstructor
 public class TestCommand extends BaseCommand {
-    private final RigidBodyDataStorage rigidBodyDataStorage;
     private final SpaceStorage spaceStorage;
 
     @Subcommand("test")
@@ -39,11 +37,10 @@ public class TestCommand extends BaseCommand {
                     HitboxRender.render(this, player.getWorld());
                 }
             };
-            rigidBodyDataStorage.add(rigidBody, physicsElement);
 
             Location location = player.getLocation();
             rigidBody.setPhysicsLocation(new Vector3f((float) location.getX(), (float) location.getY(), (float) location.getZ()));
-            space.addCollisionObject(rigidBody);
+            space.addPhysicsElement(physicsElement);
         }
     }
 }

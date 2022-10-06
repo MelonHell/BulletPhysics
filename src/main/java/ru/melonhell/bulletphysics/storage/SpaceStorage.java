@@ -16,7 +16,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SpaceStorage {
     private final PhysicsThread physicsThread;
-    private final RigidBodyDataStorage rigidBodyDataStorage;
     private final NmsTools nmsTools;
     private final TerrainGenerator terrainGenerator;
     private final PressureGenerator pressureGenerator;
@@ -25,7 +24,7 @@ public class SpaceStorage {
     public MinecraftSpace get(World world) {
         MinecraftSpace minecraftSpace = SPACE_MAP.get(world);
         if (minecraftSpace == null) {
-            final var space = new MinecraftSpace(physicsThread, this, rigidBodyDataStorage, nmsTools, terrainGenerator, pressureGenerator, world);
+            final var space = new MinecraftSpace(physicsThread, this, nmsTools, terrainGenerator, pressureGenerator, world);
             set(world, space);
 //            Bukkit.getPluginManager().callEvent(new PhysicsSpaceInitEvent(space));
             return space;
