@@ -35,7 +35,7 @@ public class PhysicsThread extends Thread implements Executor {
             this.throwable = throwable;
         });
 
-        LogManager.getLogger("Rayon").info("Starting " + getName());
+        LogManager.getLogger("BulletPhysics").info("Starting " + getName());
         this.start();
     }
 
@@ -70,12 +70,12 @@ public class PhysicsThread extends Thread implements Executor {
     @PreDestroy
     public void destroy() {
         this.running = false;
-        LogManager.getLogger("Rayon").info("Stopping " + getName());
+        LogManager.getLogger("BulletPhysics").info("Stopping " + getName());
 
         try {
             this.join(5000); // 5 second timeout
         } catch (InterruptedException e) {
-            LogManager.getLogger("Rayon").error("Error joining " + getName());
+            LogManager.getLogger("BulletPhysics").error("Error joining " + getName());
             e.printStackTrace();
         }
     }

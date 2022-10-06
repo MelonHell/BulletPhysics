@@ -31,26 +31,69 @@
  */
 package ru.melonhell.bulletphysics.init;
 
+import com.jme3.bullet.util.NativeLibrary;
 import com.jme3.system.JmeSystem;
 import com.jme3.system.Platform;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.*;
+import java.io.File;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @Component
-@RequiredArgsConstructor
 public final class NativeLibraryLoader {
-    final public static Logger logger = Logger.getLogger(NativeLibraryLoader.class.getName());
-    private final JavaPlugin javaPlugin;
+    private static final Logger logger = Logger.getLogger(NativeLibraryLoader.class.getName());
+    private final File nativesDir;
+    private final File nativesTmpDir;
+    private final String buildType = "Release";
+    private final String flavor = "Sp";
+    private final String currentVersion = NativeLibrary.expectedVersion;
 
-    public static String getName(String buildType, String flavor) {
+    public NativeLibraryLoader(JavaPlugin javaPlugin) {
+        this.nativesDir = new File(javaPlugin.getDataFolder(), "natives");
+        this.nativesTmpDir = new File(System.getProperty("java.io.tmpdir"), "BulletPhysicsNatives");
+    }
+
+    @SneakyThrows
+    @PostConstruct
+    public void init() {
+        File libFile = new File(nativesDir, getFileName());
+
+        if (!libFile.exists()) {
+            libFile.getParentFile().mkdirs();
+            Files.copy(getUrl().openStream(), libFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        try {
+            load(libFile);
+        } catch (UnsatisfiedLinkError ex) {
+            load(tempCopy(libFile));
+        }
+    }
+
+    public String getFileName() {
+        Platform platform = JmeSystem.getPlatform();
+
+        String ext = switch (platform) {
+            case Windows32, Windows64, Windows_ARM32, Windows_ARM64 -> ".dll";
+            case Android_ARM7, Android_ARM8, Linux32, Linux64, Linux_ARM32, Linux_ARM64 -> ".so";
+            case MacOSX32, MacOSX64, MacOSX_ARM64 -> ".dylib";
+            default -> throw new RuntimeException("platform = " + platform);
+        };
+        return "libbulletjme_v" + currentVersion + "_" + platform.name().toLowerCase() + "_" + buildType.toLowerCase() + "_" + flavor.toLowerCase() + ext;
+    }
+
+    @SneakyThrows
+    @SuppressWarnings({"ConstantConditions", "ConditionCoveredByFurtherCondition"})
+    public URL getUrl() {
         assert buildType.equals("Debug") || buildType.equals("Release") :
                 buildType;
         assert flavor.equals("Sp") || flavor.equals("SpMt")
@@ -66,25 +109,19 @@ public final class NativeLibraryLoader {
             case MacOSX32, MacOSX64, MacOSX_ARM64 -> "libbulletjme.dylib";
             default -> throw new RuntimeException("platform = " + platform);
         };
-        return platform + buildType + flavor + "_" + name;
+        return new URL("https://github.com/stephengold/Libbulletjme/releases/download/" + currentVersion + "/" + platform + buildType + flavor + "_" + name);
     }
 
     @SneakyThrows
-    public static File copyTmp(File file) {
-        File tmpDir = new File(file.getParentFile(), "tmp");
-        tmpDir.mkdirs();
-        File res = new File(tmpDir, UUID.randomUUID() + file.getName());
-        try (InputStream is = new FileInputStream(file); OutputStream os = new FileOutputStream(res)) {
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = is.read(buffer)) > 0) {
-                os.write(buffer, 0, length);
-            }
-        }
+    public File tempCopy(File file) {
+        nativesTmpDir.mkdirs();
+        File res = new File(nativesTmpDir, UUID.randomUUID() + "_" + file.getName());
+        Files.copy(file.toPath(), res.toPath());
+        res.deleteOnExit();
         return res;
     }
 
-    public static boolean load(File file) {
+    public boolean load(File file) {
         String absoluteFilename = file.getAbsolutePath();
         boolean success = false;
         if (!file.exists()) {
@@ -98,14 +135,5 @@ public final class NativeLibraryLoader {
         }
 
         return success;
-    }
-
-    @PostConstruct
-    public void init() {
-        File libFile = new File(javaPlugin.getDataFolder(), NativeLibraryLoader.getName("Release", "Sp"));
-        libFile = NativeLibraryLoader.copyTmp(libFile);
-        if (!NativeLibraryLoader.load(libFile)) {
-            throw new RuntimeException("Lib is not loaded");
-        }
     }
 }

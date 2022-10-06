@@ -46,7 +46,7 @@ bukkit {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT")
 
-    implementation("com.github.stephengold:Libbulletjme:16.2.1")
+    implementation("com.github.stephengold:Libbulletjme:16.3.0")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
     api(project(":nms"))
 }
