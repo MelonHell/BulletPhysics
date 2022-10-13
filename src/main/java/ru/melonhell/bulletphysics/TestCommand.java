@@ -27,7 +27,7 @@ public class TestCommand extends BaseCommand {
         for (int i = 0; i < count; i++) {
             MinecraftSpace space = spaceStorage.get(player.getWorld());
             float size = 2f;
-            MinecraftShape.Convex convex = MinecraftShape.convex(new BoundingBox(new Vector3f(), size, size, size));
+            MinecraftShape.Convex convex = MinecraftShape.convex(new BoundingBox(new Vector3f(), size * 0.5f, size * 0.5f, size * 0.5f));
 
             PhysicsRigidBody rigidBody = new PhysicsRigidBody(convex);
             PhysicsElement physicsElement = new PhysicsElement(rigidBody) {

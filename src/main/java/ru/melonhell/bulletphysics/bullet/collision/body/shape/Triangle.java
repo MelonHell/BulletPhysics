@@ -59,9 +59,9 @@ public class Triangle {
 //    }
 
     public static List<Triangle> getMeshOf(BoundingBox box) {
-        final var x = box.getXExtent() * 0.5f;
-        final var y = box.getYExtent() * 0.5f;
-        final var z = box.getZExtent() * 0.5f;
+        final var x = box.getXExtent();
+        final var y = box.getYExtent();
+        final var z = box.getZExtent();
 
         final var points = new Vector3f[]{
                 // south

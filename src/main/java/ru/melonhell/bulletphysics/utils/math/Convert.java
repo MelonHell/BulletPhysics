@@ -15,9 +15,9 @@ public class Convert {
 
     public static BoundingBox toBullet(AABBWrapper box) {
         return new BoundingBox(toBullet(box.getCenter()),
-                (float) box.getXsize(),
-                (float) box.getYsize(),
-                (float) box.getZsize());
+                (float) (box.getXsize() * 0.5),
+                (float) (box.getYsize() * 0.5),
+                (float) (box.getZsize() * 0.5));
     }
 
     public static Vector3f toBullet(BlockPosWrapper blockPos) {
