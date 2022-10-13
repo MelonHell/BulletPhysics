@@ -59,46 +59,45 @@ public class Triangle {
 //    }
 
     public static List<Triangle> getMeshOf(BoundingBox box) {
-        final var x = box.getXExtent();
-        final var y = box.getYExtent();
-        final var z = box.getZExtent();
-
+        Vector3f min = box.getMin(null);
+        Vector3f max = box.getMax(null);
+        
         final var points = new Vector3f[]{
                 // south
-                new Vector3f(x, y, z), new Vector3f(-x, y, z), new Vector3f(0, 0, z),
-                new Vector3f(-x, y, z), new Vector3f(-x, -y, z), new Vector3f(0, 0, z),
-                new Vector3f(-x, -y, z), new Vector3f(x, -y, z), new Vector3f(0, 0, z),
-                new Vector3f(x, -y, z), new Vector3f(x, y, z), new Vector3f(0, 0, z),
+                new Vector3f(max.x, max.y, max.z), new Vector3f(min.x, max.y, max.z), new Vector3f(0, 0, max.z),
+                new Vector3f(min.x, max.y, max.z), new Vector3f(min.x, min.y, max.z), new Vector3f(0, 0, max.z),
+                new Vector3f(min.x, min.y, max.z), new Vector3f(max.x, min.y, max.z), new Vector3f(0, 0, max.z),
+                new Vector3f(max.x, min.y, max.z), new Vector3f(max.x, max.y, max.z), new Vector3f(0, 0, max.z),
 
                 // north
-                new Vector3f(-x, y, -z), new Vector3f(x, y, -z), new Vector3f(0, 0, -z),
-                new Vector3f(x, y, -z), new Vector3f(x, -y, -z), new Vector3f(0, 0, -z),
-                new Vector3f(x, -y, -z), new Vector3f(-x, -y, -z), new Vector3f(0, 0, -z),
-                new Vector3f(-x, -y, -z), new Vector3f(-x, y, -z), new Vector3f(0, 0, -z),
+                new Vector3f(min.x, max.y, min.z), new Vector3f(max.x, max.y, min.z), new Vector3f(0, 0, min.z),
+                new Vector3f(max.x, max.y, min.z), new Vector3f(max.x, min.y, min.z), new Vector3f(0, 0, min.z),
+                new Vector3f(max.x, min.y, min.z), new Vector3f(min.x, min.y, min.z), new Vector3f(0, 0, min.z),
+                new Vector3f(min.x, min.y, min.z), new Vector3f(min.x, max.y, min.z), new Vector3f(0, 0, min.z),
 
                 // east
-                new Vector3f(x, y, -z), new Vector3f(x, y, z), new Vector3f(x, 0, 0),
-                new Vector3f(x, y, z), new Vector3f(x, -y, z), new Vector3f(x, 0, 0),
-                new Vector3f(x, -y, z), new Vector3f(x, -y, -z), new Vector3f(x, 0, 0),
-                new Vector3f(x, -y, -z), new Vector3f(x, y, -z), new Vector3f(x, 0, 0),
+                new Vector3f(max.x, max.y, min.z), new Vector3f(max.x, max.y, max.z), new Vector3f(max.x, 0, 0),
+                new Vector3f(max.x, max.y, max.z), new Vector3f(max.x, min.y, max.z), new Vector3f(max.x, 0, 0),
+                new Vector3f(max.x, min.y, max.z), new Vector3f(max.x, min.y, min.z), new Vector3f(max.x, 0, 0),
+                new Vector3f(max.x, min.y, min.z), new Vector3f(max.x, max.y, min.z), new Vector3f(max.x, 0, 0),
 
                 // west
-                new Vector3f(-x, y, z), new Vector3f(-x, y, -z), new Vector3f(-x, 0, 0),
-                new Vector3f(-x, y, -z), new Vector3f(-x, -y, -z), new Vector3f(-x, 0, 0),
-                new Vector3f(-x, -y, -z), new Vector3f(-x, -y, z), new Vector3f(-x, 0, 0),
-                new Vector3f(-x, -y, z), new Vector3f(-x, y, z), new Vector3f(-x, 0, 0),
+                new Vector3f(min.x, max.y, max.z), new Vector3f(min.x, max.y, min.z), new Vector3f(min.x, 0, 0),
+                new Vector3f(min.x, max.y, min.z), new Vector3f(min.x, min.y, min.z), new Vector3f(min.x, 0, 0),
+                new Vector3f(min.x, min.y, min.z), new Vector3f(min.x, min.y, max.z), new Vector3f(min.x, 0, 0),
+                new Vector3f(min.x, min.y, max.z), new Vector3f(min.x, max.y, max.z), new Vector3f(min.x, 0, 0),
 
                 // up
-                new Vector3f(x, y, -z), new Vector3f(-x, y, -z), new Vector3f(0, y, 0),
-                new Vector3f(-x, y, -z), new Vector3f(-x, y, z), new Vector3f(0, y, 0),
-                new Vector3f(-x, y, z), new Vector3f(x, y, z), new Vector3f(0, y, 0),
-                new Vector3f(x, y, z), new Vector3f(x, y, -z), new Vector3f(0, y, 0),
+                new Vector3f(max.x, max.y, min.z), new Vector3f(min.x, max.y, min.z), new Vector3f(0, max.y, 0),
+                new Vector3f(min.x, max.y, min.z), new Vector3f(min.x, max.y, max.z), new Vector3f(0, max.y, 0),
+                new Vector3f(min.x, max.y, max.z), new Vector3f(max.x, max.y, max.z), new Vector3f(0, max.y, 0),
+                new Vector3f(max.x, max.y, max.z), new Vector3f(max.x, max.y, min.z), new Vector3f(0, max.y, 0),
 
                 // down
-                new Vector3f(x, -y, z), new Vector3f(-x, -y, z), new Vector3f(0, -y, 0),
-                new Vector3f(-x, -y, z), new Vector3f(-x, -y, -z), new Vector3f(0, -y, 0),
-                new Vector3f(-x, -y, -z), new Vector3f(x, -y, -z), new Vector3f(0, -y, 0),
-                new Vector3f(x, -y, -z), new Vector3f(x, -y, z), new Vector3f(0, -y, 0)
+                new Vector3f(max.x, min.y, max.z), new Vector3f(min.x, min.y, max.z), new Vector3f(0, min.y, 0),
+                new Vector3f(min.x, min.y, max.z), new Vector3f(min.x, min.y, min.z), new Vector3f(0, min.y, 0),
+                new Vector3f(min.x, min.y, min.z), new Vector3f(max.x, min.y, min.z), new Vector3f(0, min.y, 0),
+                new Vector3f(max.x, min.y, min.z), new Vector3f(max.x, min.y, max.z), new Vector3f(0, min.y, 0)
         };
 
         final var triangles = new ArrayList<Triangle>();
