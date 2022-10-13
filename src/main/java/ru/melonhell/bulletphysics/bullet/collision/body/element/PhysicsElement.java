@@ -16,7 +16,6 @@ import ru.melonhell.bulletphysics.utils.math.Convert;
 @Setter
 public class PhysicsElement {
     public static final float SLEEP_TIME_IN_SECONDS = 2.0f;
-    protected final MinecraftSpace space;
     private final PhysicsRigidBody rigidBody;
     private final Frame frame = new Frame();
     private final Clock sleepTimer = new Clock();
@@ -25,9 +24,8 @@ public class PhysicsElement {
     private BuoyancyType buoyancyType = BuoyancyType.WATER;
     private DragType dragType = DragType.SIMPLE;
 
-    public PhysicsElement(PhysicsRigidBody rigidBody, MinecraftSpace space) {
+    public PhysicsElement(PhysicsRigidBody rigidBody) {
         this.rigidBody = rigidBody;
-        this.space = space;
         this.terrainLoadingEnabled = !rigidBody.isStatic();
     }
 

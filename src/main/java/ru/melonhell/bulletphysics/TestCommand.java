@@ -30,7 +30,7 @@ public class TestCommand extends BaseCommand {
             MinecraftShape.Convex convex = MinecraftShape.convex(new BoundingBox(new Vector3f(), size, size, size));
 
             PhysicsRigidBody rigidBody = new PhysicsRigidBody(convex);
-            PhysicsElement physicsElement = new PhysicsElement(rigidBody, space) {
+            PhysicsElement physicsElement = new PhysicsElement(rigidBody) {
                 @Override
                 public void updateFrame() {
                     super.updateFrame();
