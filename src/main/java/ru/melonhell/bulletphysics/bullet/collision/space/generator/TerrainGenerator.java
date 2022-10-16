@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import ru.melonhell.bulletphysics.bullet.collision.body.TerrainRigidBody;
 import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
 import ru.melonhell.bulletphysics.nms.NmsTools;
-import ru.melonhell.bulletphysics.utils.math.Convert;
+import ru.melonhell.bulletphysics.utils.math.BoundingBoxUtils;
 
 import java.util.HashSet;
 
@@ -31,10 +31,10 @@ public class TerrainGenerator {
                 continue;
             }
 
-            final var aabb = Convert.toMinecraft(rigidBody.boundingBox(new BoundingBox())).inflate(0.5f);
+            BoundingBox box = rigidBody.boundingBox(new BoundingBox());
+            BoundingBoxUtils.inflate(box, 0.5f);
 
-
-            nmsTools.betweenClosedStream(aabb).forEach(blockPos -> {
+            nmsTools.betweenClosedStream(box).forEach(blockPos -> {
                 chunkCache.getBlockData(blockPos).ifPresent(blockData -> {
                     space.getTerrainObjectAt(blockPos).ifPresentOrElse(terrain -> {
                         if (nmsTools.getBlockId(blockData.blockState()) != nmsTools.getBlockId(terrain.getBlockState())) {

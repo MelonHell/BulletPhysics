@@ -1,16 +1,18 @@
 package ru.melonhell.bulletphysics.nms;
 
+import com.jme3.bounding.BoundingBox;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.util.Vector;
-import ru.melonhell.bulletphysics.nms.wrappers.AABBWrapper;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
 import ru.melonhell.bulletphysics.nms.wrappers.FluidStateWrapper;
 
 import java.util.stream.Stream;
 
 public interface NmsTools {
-    Stream<BlockPosWrapper> betweenClosedStream(AABBWrapper aabb);
+
+    Stream<BlockPosWrapper> betweenClosedStream(BoundingBox aabb);
 
     FluidStateWrapper getFluidState(Block block);
 
@@ -22,5 +24,7 @@ public interface NmsTools {
 
     int getBlockId(BlockState blockState);
 
-    AABBWrapper boundingBox(Block block);
+    BoundingBox boundingBox(Block block, BlockState blockState);
+
+    BlockState createBlockState(Material material);
 }

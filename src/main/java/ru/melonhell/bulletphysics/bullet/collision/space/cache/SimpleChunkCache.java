@@ -2,6 +2,7 @@ package ru.melonhell.bulletphysics.bullet.collision.space.cache;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.objects.PhysicsRigidBody;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import ru.melonhell.bulletphysics.bullet.collision.body.shape.MinecraftShape;
 import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
@@ -9,9 +10,8 @@ import ru.melonhell.bulletphysics.bullet.collision.space.block.BlockProperty;
 import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.BlockData;
 import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.FluidColumn;
 import ru.melonhell.bulletphysics.nms.NmsTools;
-import ru.melonhell.bulletphysics.nms.wrappers.AABBWrapper;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
-import ru.melonhell.bulletphysics.utils.math.Convert;
+import ru.melonhell.bulletphysics.utils.math.BoundingBoxUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class SimpleChunkCache implements ChunkCache {
 
         final var world = space.getWorld();
         final var block = blockPos.toBlock(world);
-        final var blockState = block.getState();
+        final var blockState = getBlockState(block);
 
         if (isValidBlock(blockState)) {
             final var properties = BlockProperty.getBlockProperty(blockState.getType());
@@ -75,7 +75,8 @@ public class SimpleChunkCache implements ChunkCache {
 
 //            final var voxelShape = blockState.getCollisionShape(level, blockPos);
 //            final var boundingBox = voxelShape.isEmpty() ? new AABBWrapper(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.bounds();
-            AABBWrapper boundingBox = nmsTools.boundingBox(block);
+            BoundingBox boundingBox = nmsTools.boundingBox(block, blockState);
+            BoundingBoxUtils.clearCenter(boundingBox);
             MinecraftShape.Convex shape = MinecraftShape.convex(boundingBox);
 
 
@@ -94,14 +95,15 @@ public class SimpleChunkCache implements ChunkCache {
                 continue;
             }
 
-            final var aabb = Convert.toMinecraft(rigidBody.boundingBox(new BoundingBox())).inflate(1.0f);
+            BoundingBox box = rigidBody.boundingBox(new BoundingBox());
+            BoundingBoxUtils.inflate(box, 1.0f);
 
-            nmsTools.betweenClosedStream(aabb).forEach(blockPos -> {
+            nmsTools.betweenClosedStream(box).forEach(blockPos -> {
                 this.activePositions.add(blockPos);
 
                 this.getBlockData(blockPos).ifPresentOrElse(blockData -> {
-                    final var blockState = blockPos.toBlock(world).getState();
 
+                    final var blockState = getBlockState(blockPos.toBlock(world));
 
                     if (nmsTools.getBlockId(blockData.blockState()) != nmsTools.getBlockId(blockState)) {
                         loadBlockData(blockPos);
@@ -159,5 +161,14 @@ public class SimpleChunkCache implements ChunkCache {
 
         if (properties != null) return properties.collidable();
         return nmsTools.collidableCheck(blockState);
+    }
+
+    public BlockState getBlockState(Block block) {
+        try {
+            return block.getState(false);
+        } catch (IllegalStateException ignored) {
+        }
+
+        return nmsTools.createBlockState(block.getType());
     }
 }

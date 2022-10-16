@@ -32,6 +32,7 @@ allprojects {
     }
     dependencies {
         compileOnly("ru.spliterash:spring-spigot:1.0.5")
+        implementation("com.github.stephengold:Libbulletjme:16.3.0")
     }
 }
 

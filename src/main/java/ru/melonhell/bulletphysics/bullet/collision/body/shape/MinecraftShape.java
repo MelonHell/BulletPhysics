@@ -6,25 +6,14 @@ import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.collision.shapes.infos.IndexedMesh;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import ru.melonhell.bulletphysics.nms.wrappers.AABBWrapper;
-import ru.melonhell.bulletphysics.utils.math.Convert;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public sealed interface MinecraftShape permits MinecraftShape.Convex, MinecraftShape.Concave {
-    static Convex convex(AABBWrapper box) {
-        return MinecraftShape.convex(Convert.toBullet(box));
-    }
-
     static Convex convex(BoundingBox box) {
         return new Convex(Triangle.getMeshOf(box));
-    }
-
-    static Concave concave(AABBWrapper box) {
-        return MinecraftShape.concave(Convert.toBullet(box));
     }
 
     static Concave concave(BoundingBox box) {

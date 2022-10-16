@@ -7,10 +7,8 @@ import com.jme3.math.Vector3f;
 import lombok.Getter;
 import lombok.Setter;
 import ru.melonhell.bulletphysics.bullet.collision.body.shape.MinecraftShape;
-import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
-import ru.melonhell.bulletphysics.nms.wrappers.AABBWrapper;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
-import ru.melonhell.bulletphysics.utils.math.Convert;
+import ru.melonhell.bulletphysics.utils.math.BoundingBoxUtils;
 
 @Getter
 @Setter
@@ -34,7 +32,10 @@ public class PhysicsElement {
     }
 
     public boolean isNear(BlockPosWrapper blockPos) {
-        return Convert.toMinecraft(rigidBody.boundingBox(new BoundingBox())).intersects(new AABBWrapper(blockPos).inflate(0.5f));
+        BoundingBox boundingBox1 = rigidBody.boundingBox(new BoundingBox());
+        BoundingBox boundingBox2 = blockPos.boundingBox();
+        BoundingBoxUtils.inflate(boundingBox2, 0.5f);
+        return BoundingBoxUtils.intersects(boundingBox1, boundingBox2);
     }
 
     public boolean isWaterBuoyancyEnabled() {

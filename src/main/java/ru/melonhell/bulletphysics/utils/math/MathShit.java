@@ -2,10 +2,12 @@ package ru.melonhell.bulletphysics.utils.math;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class MathShit {
 
-    public static Quaternion slerp(Quaternion q1, Quaternion q2, float t) {
+    public Quaternion slerp(Quaternion q1, Quaternion q2, float t) {
         q1.normalizeLocal();
         q2.normalizeLocal();
 
@@ -41,7 +43,7 @@ public class MathShit {
         return out;
     }
 
-    public static Vector3f toEulerAngles(Quaternion quat) {
+    public Vector3f toEulerAngles(Quaternion quat) {
         final var q = new Quaternion(quat);
 
         var i = 0.0f;
@@ -66,11 +68,11 @@ public class MathShit {
         return new Vector3f(i, j, k);
     }
 
-    public static double lerp(double delta, double start, double end) {
+    public double lerp(double delta, double start, double end) {
         return start + delta * (end - start);
     }
 
-    public static Vector3f lerp(Vector3f vec1, Vector3f vec2, float delta) {
+    public Vector3f lerp(Vector3f vec1, Vector3f vec2, float delta) {
         return new Vector3f(
                 (float) lerp(delta, vec1.x, vec2.x),
                 (float) lerp(delta, vec1.y, vec2.y),

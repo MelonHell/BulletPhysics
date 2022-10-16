@@ -1,5 +1,7 @@
 package ru.melonhell.bulletphysics.nms.wrappers;
 
+import com.jme3.bounding.BoundingBox;
+import com.jme3.math.Vector3f;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.World;
@@ -24,6 +26,10 @@ public class BlockPosWrapper {
 
     public Block toBlock(World world) {
         return world.getBlockAt(x, y, z);
+    }
+
+    public BoundingBox boundingBox() {
+        return new BoundingBox(new Vector3f(x, y, z), new Vector3f(x + 1, y + 1, z + 1));
     }
 
     @Override
