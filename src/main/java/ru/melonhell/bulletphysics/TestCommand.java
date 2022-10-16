@@ -23,13 +23,12 @@ public class TestCommand extends BaseCommand {
     private final SpaceStorage spaceStorage;
 
     @Subcommand("test")
-    public void test(Player player, @Default("1") int count) {
+    public void test(Player player, @Default("1") float size, @Default("1") int count) {
         for (int i = 0; i < count; i++) {
             MinecraftSpace space = spaceStorage.get(player.getWorld());
-            float size = 2f;
             MinecraftShape.Convex convex = MinecraftShape.convex(new BoundingBox(new Vector3f(), size * 0.5f, size * 0.5f, size * 0.5f));
 
-            PhysicsRigidBody rigidBody = new PhysicsRigidBody(convex);
+            PhysicsRigidBody rigidBody = new PhysicsRigidBody(convex, 100);
             PhysicsElement physicsElement = new PhysicsElement(rigidBody) {
                 @Override
                 public void updateFrame() {

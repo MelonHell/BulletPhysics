@@ -7,6 +7,7 @@ import com.jme3.bullet.collision.shapes.infos.IndexedMesh;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -16,8 +17,24 @@ public sealed interface MinecraftShape permits MinecraftShape.Convex, MinecraftS
         return new Convex(Triangle.getMeshOf(box));
     }
 
+    static Convex convex(Iterable<BoundingBox> boxes) {
+        List<Triangle> triangles = new ArrayList<>();
+        for (BoundingBox box : boxes) {
+            triangles.addAll(Triangle.getMeshOf(box));
+        }
+        return new Convex(triangles);
+    }
+
     static Concave concave(BoundingBox box) {
         return new Concave(Triangle.getMeshOf(box));
+    }
+
+    static Concave concave(Iterable<BoundingBox> boxes) {
+        List<Triangle> triangles = new ArrayList<>();
+        for (BoundingBox box : boxes) {
+            triangles.addAll(Triangle.getMeshOf(box));
+        }
+        return new Concave(triangles);
     }
 
     List<Triangle> getTriangles(Quaternion quaternion);

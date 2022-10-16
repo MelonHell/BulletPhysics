@@ -72,13 +72,9 @@ public class SimpleChunkCache implements ChunkCache {
 //            }
 
             // TODO ступеньки хуеньки итд
-
-//            final var voxelShape = blockState.getCollisionShape(level, blockPos);
-//            final var boundingBox = voxelShape.isEmpty() ? new AABBWrapper(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.bounds();
             BoundingBox boundingBox = nmsTools.boundingBox(block, blockState);
             BoundingBoxUtils.clearCenter(boundingBox);
-            MinecraftShape.Convex shape = MinecraftShape.convex(boundingBox);
-
+            MinecraftShape shape = MinecraftShape.convex(boundingBox);
 
             this.blockData.put(blockPos, new BlockData(block, blockState, shape));
         }

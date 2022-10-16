@@ -23,90 +23,65 @@ public class Triangle {
         this.area.multLocal(Math.signum(centroid.dot(area))); // make sure it faces outward
     }
 
-//    public static List<Triangle> getMeshOf(Pattern pattern) {
-//        final var triangles = new ArrayList<Triangle>();
-//
-////        for (var quad : pattern.getQuads()) {
-////            triangles.add(new Triangle(
-////                    Convert.toBullet(quad.getPoints().get(0)),
-////                    Convert.toBullet(quad.getPoints().get(1)),
-////                    Convert.toBullet(quad.getPoints().get(2))
-////            ));
-////
-////            triangles.add(new Triangle(
-////                    Convert.toBullet(quad.getPoints().get(0)),
-////                    Convert.toBullet(quad.getPoints().get(3)),
-////                    Convert.toBullet(quad.getPoints().get(1))
-////            ));
-////        }
-//
-//        for (var quad : pattern.getQuads()) {
+    public static List<Triangle> getMeshOf(BoundingBox boundingBox) {
+        final var triangles = new ArrayList<Triangle>();
+
+        for (var quad : getQuads(boundingBox)) {
 //            final var centroid = new Vector3f();
 //
 //            for (var point : quad.getPoints()) {
-//                centroid.addLocal(Convert.toBullet(point));
+//                centroid.addLocal(point);
 //            }
 //
 //            centroid.divideLocal(4);
 //
-//            triangles.add(new Triangle(Convert.toBullet(quad.getPoints().get(0)), centroid, Convert.toBullet(quad.getPoints().get(1))));
-//            triangles.add(new Triangle(Convert.toBullet(quad.getPoints().get(1)), centroid, Convert.toBullet(quad.getPoints().get(2))));
-//            triangles.add(new Triangle(Convert.toBullet(quad.getPoints().get(2)), centroid, Convert.toBullet(quad.getPoints().get(3))));
-//            triangles.add(new Triangle(Convert.toBullet(quad.getPoints().get(3)), centroid, Convert.toBullet(quad.getPoints().get(0))));
-//        }
-//
-//        return triangles;
-//    }
-
-    public static List<Triangle> getMeshOf(BoundingBox box) {
-        Vector3f min = box.getMin(null);
-        Vector3f max = box.getMax(null);
-        
-        final var points = new Vector3f[]{
-                // south
-                new Vector3f(max.x, max.y, max.z), new Vector3f(min.x, max.y, max.z), new Vector3f(0, 0, max.z),
-                new Vector3f(min.x, max.y, max.z), new Vector3f(min.x, min.y, max.z), new Vector3f(0, 0, max.z),
-                new Vector3f(min.x, min.y, max.z), new Vector3f(max.x, min.y, max.z), new Vector3f(0, 0, max.z),
-                new Vector3f(max.x, min.y, max.z), new Vector3f(max.x, max.y, max.z), new Vector3f(0, 0, max.z),
-
-                // north
-                new Vector3f(min.x, max.y, min.z), new Vector3f(max.x, max.y, min.z), new Vector3f(0, 0, min.z),
-                new Vector3f(max.x, max.y, min.z), new Vector3f(max.x, min.y, min.z), new Vector3f(0, 0, min.z),
-                new Vector3f(max.x, min.y, min.z), new Vector3f(min.x, min.y, min.z), new Vector3f(0, 0, min.z),
-                new Vector3f(min.x, min.y, min.z), new Vector3f(min.x, max.y, min.z), new Vector3f(0, 0, min.z),
-
-                // east
-                new Vector3f(max.x, max.y, min.z), new Vector3f(max.x, max.y, max.z), new Vector3f(max.x, 0, 0),
-                new Vector3f(max.x, max.y, max.z), new Vector3f(max.x, min.y, max.z), new Vector3f(max.x, 0, 0),
-                new Vector3f(max.x, min.y, max.z), new Vector3f(max.x, min.y, min.z), new Vector3f(max.x, 0, 0),
-                new Vector3f(max.x, min.y, min.z), new Vector3f(max.x, max.y, min.z), new Vector3f(max.x, 0, 0),
-
-                // west
-                new Vector3f(min.x, max.y, max.z), new Vector3f(min.x, max.y, min.z), new Vector3f(min.x, 0, 0),
-                new Vector3f(min.x, max.y, min.z), new Vector3f(min.x, min.y, min.z), new Vector3f(min.x, 0, 0),
-                new Vector3f(min.x, min.y, min.z), new Vector3f(min.x, min.y, max.z), new Vector3f(min.x, 0, 0),
-                new Vector3f(min.x, min.y, max.z), new Vector3f(min.x, max.y, max.z), new Vector3f(min.x, 0, 0),
-
-                // up
-                new Vector3f(max.x, max.y, min.z), new Vector3f(min.x, max.y, min.z), new Vector3f(0, max.y, 0),
-                new Vector3f(min.x, max.y, min.z), new Vector3f(min.x, max.y, max.z), new Vector3f(0, max.y, 0),
-                new Vector3f(min.x, max.y, max.z), new Vector3f(max.x, max.y, max.z), new Vector3f(0, max.y, 0),
-                new Vector3f(max.x, max.y, max.z), new Vector3f(max.x, max.y, min.z), new Vector3f(0, max.y, 0),
-
-                // down
-                new Vector3f(max.x, min.y, max.z), new Vector3f(min.x, min.y, max.z), new Vector3f(0, min.y, 0),
-                new Vector3f(min.x, min.y, max.z), new Vector3f(min.x, min.y, min.z), new Vector3f(0, min.y, 0),
-                new Vector3f(min.x, min.y, min.z), new Vector3f(max.x, min.y, min.z), new Vector3f(0, min.y, 0),
-                new Vector3f(max.x, min.y, min.z), new Vector3f(max.x, min.y, max.z), new Vector3f(0, min.y, 0)
-        };
-
-        final var triangles = new ArrayList<Triangle>();
-
-        for (int i = 0; i < points.length; i += 3) {
-            triangles.add(new Triangle(points[i], points[i + 1], points[i + 2]));
+//            triangles.add(new Triangle(quad.getPoints().get(0), centroid, quad.getPoints().get(1)));
+//            triangles.add(new Triangle(quad.getPoints().get(1), centroid, quad.getPoints().get(2)));
+//            triangles.add(new Triangle(quad.getPoints().get(2), centroid, quad.getPoints().get(3)));
+//            triangles.add(new Triangle(quad.getPoints().get(3), centroid, quad.getPoints().get(0)));
+            triangles.add(new Triangle(quad.p0(), quad.p1(), quad.p2()));
+            triangles.add(new Triangle(quad.p2(), quad.p3(), quad.p0()));
         }
 
         return triangles;
+    }
+
+    private static List<Quad> getQuads(BoundingBox box) {
+        Vector3f min = box.getMin(null);
+        Vector3f max = box.getMax(null);
+
+        return List.of(
+                new Quad(Quad.Side.NORTH,
+                        new Vector3f(min.x, max.y, min.z),
+                        new Vector3f(max.x, max.y, min.z),
+                        new Vector3f(max.x, min.y, min.z),
+                        new Vector3f(min.x, min.y, min.z)),
+                new Quad(Quad.Side.EAST,
+                        new Vector3f(max.x, max.y, min.z),
+                        new Vector3f(max.x, max.y, max.z),
+                        new Vector3f(max.x, min.y, max.z),
+                        new Vector3f(max.x, min.y, min.z)),
+                new Quad(Quad.Side.SOUTH,
+                        new Vector3f(max.x, max.y, max.z),
+                        new Vector3f(min.x, max.y, max.z),
+                        new Vector3f(min.x, min.y, max.z),
+                        new Vector3f(max.x, min.y, max.z)),
+                new Quad(Quad.Side.WEST,
+                        new Vector3f(min.x, max.y, max.z),
+                        new Vector3f(min.x, max.y, min.z),
+                        new Vector3f(min.x, min.y, min.z),
+                        new Vector3f(min.x, min.y, max.z)),
+                new Quad(Quad.Side.UP,
+                        new Vector3f(max.x, max.y, min.z),
+                        new Vector3f(min.x, max.y, min.z),
+                        new Vector3f(min.x, max.y, max.z),
+                        new Vector3f(max.x, max.y, max.z)),
+                new Quad(Quad.Side.DOWN,
+                        new Vector3f(max.x, min.y, max.z),
+                        new Vector3f(min.x, min.y, max.z),
+                        new Vector3f(min.x, min.y, min.z),
+                        new Vector3f(max.x, min.y, min.z)
+                ));
     }
 
     private static Vector3f transform(Vector3f vector, Quaternion rotation) {

@@ -8,6 +8,7 @@ import org.bukkit.util.Vector;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
 import ru.melonhell.bulletphysics.nms.wrappers.FluidStateWrapper;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 public interface NmsTools {
@@ -25,6 +26,8 @@ public interface NmsTools {
     int getBlockId(BlockState blockState);
 
     BoundingBox boundingBox(Block block, BlockState blockState);
+
+    List<BoundingBox> boundingBoxes(Block block, BlockState blockState);
 
     BlockState createBlockState(Material material);
 }

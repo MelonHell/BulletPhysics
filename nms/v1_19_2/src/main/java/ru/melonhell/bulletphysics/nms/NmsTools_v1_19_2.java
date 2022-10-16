@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
 import ru.melonhell.bulletphysics.nms.wrappers.FluidStateWrapper;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Component
@@ -65,6 +67,14 @@ public class NmsTools_v1_19_2 implements NmsTools {
         VoxelShape voxelShape = stateHandle.getCollisionShape(((CraftBlock) block).getHandle(), ((CraftBlock) block).getPosition());
         AABB boundingBox = voxelShape.isEmpty() ? new AABB(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.bounds();
         return NmsWrapUtils_v1_19_2.convert(boundingBox);
+    }
+
+    @Override
+    public List<BoundingBox> boundingBoxes(Block block, BlockState blockState) {
+        net.minecraft.world.level.block.state.BlockState stateHandle = ((CraftBlockState) blockState).getHandle();
+        VoxelShape voxelShape = stateHandle.getCollisionShape(((CraftBlock) block).getHandle(), ((CraftBlock) block).getPosition());
+        List<AABB> boundingBoxes = voxelShape.isEmpty() ? Collections.singletonList(new AABB(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f)) : voxelShape.toAabbs();
+        return boundingBoxes.stream().map(NmsWrapUtils_v1_19_2::convert).toList();
     }
 
     @Override
