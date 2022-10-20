@@ -2,8 +2,6 @@ package ru.melonhell.bulletphysics.bullet.collision.space.cache;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.objects.PhysicsRigidBody;
-import lombok.SneakyThrows;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import ru.melonhell.bulletphysics.bullet.collision.body.shape.MinecraftShape;
 import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
@@ -12,7 +10,6 @@ import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.BlockData;
 import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.FluidColumn;
 import ru.melonhell.bulletphysics.nms.NmsTools;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
-import ru.melonhell.bulletphysics.utils.SchedulerUtils;
 import ru.melonhell.bulletphysics.utils.math.BoundingBoxUtils;
 
 import java.util.ArrayList;
@@ -54,7 +51,7 @@ public class SimpleChunkCache implements ChunkCache {
 
         final var world = space.getWorld();
         final var block = blockPos.toBlock(world);
-        final var blockState = getBlockState(block);
+        final var blockState = block.getState();
 
         if (isValidBlock(blockState)) {
             final var properties = BlockProperty.getBlockProperty(blockState.getType());
@@ -101,7 +98,7 @@ public class SimpleChunkCache implements ChunkCache {
 
                 this.getBlockData(blockPos).ifPresentOrElse(blockData -> {
 
-                    final var blockState = getBlockState(blockPos.toBlock(world));
+                    final var blockState = blockPos.toBlock(world).getState();
 
                     if (nmsTools.getBlockId(blockData.blockState()) != nmsTools.getBlockId(blockState)) {
                         loadBlockData(blockPos);
@@ -159,14 +156,5 @@ public class SimpleChunkCache implements ChunkCache {
 
         if (properties != null) return properties.collidable();
         return nmsTools.collidableCheck(blockState);
-    }
-
-    @SneakyThrows
-    public BlockState getBlockState(Block block) {
-        try {
-            return block.getState(false);
-        } catch (IllegalStateException exception) {
-            return SchedulerUtils.runSyncFuture(block::getState).get();
-        }
     }
 }

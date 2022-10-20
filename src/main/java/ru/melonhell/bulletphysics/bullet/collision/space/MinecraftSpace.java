@@ -53,6 +53,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     private final ChunkCache chunkCache;
 
     private volatile boolean stepping;
+    private long lastStep = 0;
 
     public MinecraftSpace(JavaPlugin javaPlugin, PhysicsThread physicsThread, NmsTools nmsTools, TerrainGenerator terrainGenerator, PressureGenerator pressureGenerator, World world) {
         super(BroadphaseType.DBVT);
@@ -85,7 +86,15 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      * see PhysicsSpaceEvents
      */
     public void step() {
-        Bukkit.getScheduler().runTaskAsynchronously(javaPlugin, () -> getElementRigidBodyDataList().forEach(PhysicsElement::updateFrame));
+        Bukkit.getScheduler().runTaskAsynchronously(javaPlugin, () -> {
+            getElementRigidBodyDataList().forEach(PhysicsElement::updateFrame);
+        });
+        chunkCache.refreshAll();
+
+        if (lastStep == 0) {
+            lastStep = System.currentTimeMillis();
+            return;
+        }
 
         if (!isStepping() && !isEmpty()) {
             this.stepping = true;
@@ -95,12 +104,12 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
                 /* Call collision events */
                 this.distributeEvents();
 
-                chunkCache.refreshAll();
                 terrainGenerator.step(this);
                 pressureGenerator.step(this);
 
                 /* Step the Simulation */
-                this.update(1 / 20f);
+                this.update((System.currentTimeMillis() - lastStep) / 1000f);
+                lastStep = System.currentTimeMillis();
             }, getPhysicsThread());
 
 
