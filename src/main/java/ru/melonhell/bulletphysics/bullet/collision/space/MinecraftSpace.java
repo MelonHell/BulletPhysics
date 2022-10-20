@@ -8,7 +8,9 @@ import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.plugin.java.JavaPlugin;
 import ru.melonhell.bulletphysics.bullet.collision.body.TerrainRigidBody;
 import ru.melonhell.bulletphysics.bullet.collision.body.element.PhysicsElement;
 import ru.melonhell.bulletphysics.bullet.collision.space.cache.ChunkCache;
@@ -18,7 +20,6 @@ import ru.melonhell.bulletphysics.bullet.collision.space.generator.TerrainGenera
 import ru.melonhell.bulletphysics.bullet.thread.PhysicsThread;
 import ru.melonhell.bulletphysics.nms.NmsTools;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
-import ru.melonhell.bulletphysics.storage.SpaceStorage;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -37,13 +38,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * see PhysicsSpaceEvents
  */
 public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
-    private final CompletableFuture[] futures = new CompletableFuture[3];
     private final Map<BlockPosWrapper, TerrainRigidBody> terrainMap;
     private final Map<PhysicsCollisionObject, PhysicsElement> physicsElementMap = new HashMap<>();
+    private final JavaPlugin javaPlugin;
     @Getter
     private final PhysicsThread physicsThread;
-    @Getter
-    private final SpaceStorage spaceStorage;
     @Getter
     private final TerrainGenerator terrainGenerator;
     @Getter
@@ -55,11 +54,11 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
     private volatile boolean stepping;
 
-    public MinecraftSpace(PhysicsThread physicsThread, SpaceStorage spaceStorage, NmsTools nmsTools, TerrainGenerator terrainGenerator, PressureGenerator pressureGenerator, World world) {
+    public MinecraftSpace(JavaPlugin javaPlugin, PhysicsThread physicsThread, NmsTools nmsTools, TerrainGenerator terrainGenerator, PressureGenerator pressureGenerator, World world) {
         super(BroadphaseType.DBVT);
 
+        this.javaPlugin = javaPlugin;
         this.physicsThread = physicsThread;
-        this.spaceStorage = spaceStorage;
         this.pressureGenerator = pressureGenerator;
         this.terrainGenerator = terrainGenerator;
         this.world = world;
@@ -86,31 +85,26 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      * see PhysicsSpaceEvents
      */
     public void step() {
-        getElementRigidBodyDataList().forEach(PhysicsElement::updateFrame);
+        Bukkit.getScheduler().runTaskAsynchronously(javaPlugin, () -> getElementRigidBodyDataList().forEach(PhysicsElement::updateFrame));
 
         if (!isStepping() && !isEmpty()) {
             this.stepping = true;
-            this.chunkCache.refreshAll();
 
-            // Step 3 times per tick, re-evaluating forces each step
-            for (int i = 0; i < 3; ++i) {
-                // Hop threads...
-                this.futures[i] = CompletableFuture.runAsync(() -> {
-                    /* Call collision events */
-                    this.distributeEvents();
+            // Hop threads...
+            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                /* Call collision events */
+                this.distributeEvents();
 
-                    /* World Step Event */
-//                    Bukkit.getPluginManager().callEvent(new PhysicsSpaceStepEvent(this));
-//                    ServerEventHandler.physicsSpaceStep(this);
-                    terrainGenerator.step(this);
-                    pressureGenerator.step(this);
+                chunkCache.refreshAll();
+                terrainGenerator.step(this);
+                pressureGenerator.step(this);
 
-                    /* Step the Simulation */
-                    this.update(1 / 60f);
-                }, getPhysicsThread());
-            }
+                /* Step the Simulation */
+                this.update(1 / 20f);
+            }, getPhysicsThread());
 
-            CompletableFuture.allOf(futures).thenRun(() -> this.stepping = false);
+
+            future.thenRun(() -> this.stepping = false);
         }
     }
 

@@ -14,18 +14,18 @@ import org.springframework.stereotype.Component;
 import ru.melonhell.bulletphysics.bullet.collision.body.element.PhysicsElement;
 import ru.melonhell.bulletphysics.bullet.collision.body.shape.MinecraftShape;
 import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
-import ru.melonhell.bulletphysics.storage.SpaceStorage;
+import ru.melonhell.bulletphysics.bullet.collision.space.SpaceService;
 
 @Component
 @CommandAlias("bulletphysics")
 @RequiredArgsConstructor
 public class TestCommand extends BaseCommand {
-    private final SpaceStorage spaceStorage;
+    private final SpaceService spaceService;
 
     @Subcommand("test")
     public void test(Player player, @Default("1") float size, @Default("1") int count) {
         for (int i = 0; i < count; i++) {
-            MinecraftSpace space = spaceStorage.get(player.getWorld());
+            MinecraftSpace space = spaceService.get(player.getWorld());
             MinecraftShape.Convex convex = MinecraftShape.convex(new BoundingBox(new Vector3f(), size * 0.5f, size * 0.5f, size * 0.5f));
 
             PhysicsRigidBody rigidBody = new PhysicsRigidBody(convex, 100);

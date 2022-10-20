@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
 import ru.melonhell.bulletphysics.nms.wrappers.FluidStateWrapper;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
