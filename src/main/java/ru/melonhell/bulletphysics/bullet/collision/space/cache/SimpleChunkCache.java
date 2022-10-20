@@ -2,21 +2,27 @@ package ru.melonhell.bulletphysics.bullet.collision.space.cache;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.objects.PhysicsRigidBody;
+import lombok.SneakyThrows;
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.plugin.java.JavaPlugin;
 import ru.melonhell.bulletphysics.bullet.collision.body.shape.MinecraftShape;
 import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
 import ru.melonhell.bulletphysics.bullet.collision.space.block.BlockProperty;
 import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.BlockData;
 import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.FluidColumn;
+import ru.melonhell.bulletphysics.init.BulletPhysicsPlugin;
 import ru.melonhell.bulletphysics.nms.NmsTools;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
+import ru.melonhell.bulletphysics.utils.SchedulerUtils;
 import ru.melonhell.bulletphysics.utils.math.BoundingBoxUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SimpleChunkCache implements ChunkCache {
@@ -72,10 +78,10 @@ public class SimpleChunkCache implements ChunkCache {
 //            }
 
             // TODO ступеньки хуеньки итд
-            BoundingBox boundingBox = nmsTools.boundingBox(block, blockState);
-            BoundingBoxUtils.clearCenter(boundingBox);
-            MinecraftShape shape = MinecraftShape.convex(boundingBox);
-
+            List<BoundingBox> boundingBoxes = nmsTools.boundingBoxes(block, blockState);
+//            BoundingBoxUtils.test(boundingBox);
+            if (boundingBoxes.isEmpty()) return;
+            MinecraftShape shape = MinecraftShape.convex(boundingBoxes);
             this.blockData.put(blockPos, new BlockData(block, blockState, shape));
         }
     }
@@ -159,12 +165,12 @@ public class SimpleChunkCache implements ChunkCache {
         return nmsTools.collidableCheck(blockState);
     }
 
+    @SneakyThrows
     public BlockState getBlockState(Block block) {
         try {
             return block.getState(false);
-        } catch (IllegalStateException ignored) {
+        } catch (IllegalStateException exception) {
+            return SchedulerUtils.runSyncFuture(block::getState).get();
         }
-
-        return nmsTools.createBlockState(block.getType());
     }
 }

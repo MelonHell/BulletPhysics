@@ -20,7 +20,7 @@ public class TerrainRigidBody extends PhysicsRigidBody {
 
         this.setFriction(friction);
         this.setRestitution(restitution);
-        this.setPhysicsLocation(new Vector3f(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f));
+        this.setPhysicsLocation(new Vector3f(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
     }
 
     public static TerrainRigidBody from(BlockData blockData) {

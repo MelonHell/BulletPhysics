@@ -65,15 +65,16 @@ public class NmsTools_v1_19_2 implements NmsTools {
     public BoundingBox boundingBox(Block block, BlockState blockState) {
         net.minecraft.world.level.block.state.BlockState stateHandle = ((CraftBlockState) blockState).getHandle();
         VoxelShape voxelShape = stateHandle.getCollisionShape(((CraftBlock) block).getHandle(), ((CraftBlock) block).getPosition());
-        AABB boundingBox = voxelShape.isEmpty() ? new AABB(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.bounds();
-        return NmsWrapUtils_v1_19_2.convert(boundingBox);
+//        AABB boundingBox = voxelShape.isEmpty() ? new AABB(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.bounds();
+        if (voxelShape.isEmpty()) return null;
+        return NmsWrapUtils_v1_19_2.convert(voxelShape.bounds());
     }
 
     @Override
     public List<BoundingBox> boundingBoxes(Block block, BlockState blockState) {
         net.minecraft.world.level.block.state.BlockState stateHandle = ((CraftBlockState) blockState).getHandle();
         VoxelShape voxelShape = stateHandle.getCollisionShape(((CraftBlock) block).getHandle(), ((CraftBlock) block).getPosition());
-        List<AABB> boundingBoxes = voxelShape.isEmpty() ? Collections.singletonList(new AABB(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f)) : voxelShape.toAabbs();
+        List<AABB> boundingBoxes = voxelShape.toAabbs();
         return boundingBoxes.stream().map(NmsWrapUtils_v1_19_2::convert).toList();
     }
 
