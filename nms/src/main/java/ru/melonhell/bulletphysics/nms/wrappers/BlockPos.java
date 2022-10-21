@@ -13,12 +13,12 @@ import java.util.Objects;
 @Immutable
 @Getter
 @RequiredArgsConstructor
-public class BlockPosWrapper {
+public class BlockPos {
     private final int x;
     private final int y;
     private final int z;
 
-    public BlockPosWrapper(Block block) {
+    public BlockPos(Block block) {
         this.x = block.getX();
         this.y = block.getY();
         this.z = block.getZ();
@@ -36,7 +36,7 @@ public class BlockPosWrapper {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BlockPosWrapper that = (BlockPosWrapper) o;
+        BlockPos that = (BlockPos) o;
         return x == that.x && y == that.y && z == that.z;
     }
 

@@ -4,7 +4,7 @@ import com.jme3.math.Vector3f;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import ru.melonhell.bulletphysics.nms.NmsTools;
-import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
+import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 import ru.melonhell.bulletphysics.utils.math.Convert;
 
 public class FluidColumn {
@@ -44,7 +44,7 @@ public class FluidColumn {
         this.flow = Convert.toBullet(nmsTools.getFlow(fluidState, cursor));
     }
 
-    public boolean contains(BlockPosWrapper blockPos) {
+    public boolean contains(BlockPos blockPos) {
         return top.block().getX() == blockPos.getX()
                 && top.block().getZ() == blockPos.getZ()
                 && top.block().getY() >= blockPos.getY()

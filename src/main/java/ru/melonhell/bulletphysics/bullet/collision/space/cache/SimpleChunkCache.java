@@ -2,6 +2,7 @@ package ru.melonhell.bulletphysics.bullet.collision.space.cache;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.objects.PhysicsRigidBody;
+import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import ru.melonhell.bulletphysics.bullet.collision.body.shape.MinecraftShape;
 import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
@@ -9,7 +10,7 @@ import ru.melonhell.bulletphysics.bullet.collision.space.block.BlockProperty;
 import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.BlockData;
 import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.FluidColumn;
 import ru.melonhell.bulletphysics.nms.NmsTools;
-import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
+import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 import ru.melonhell.bulletphysics.utils.math.BoundingBoxUtils;
 
 import java.util.ArrayList;
@@ -20,9 +21,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SimpleChunkCache implements ChunkCache {
     private final MinecraftSpace space;
-    private final Map<BlockPosWrapper, BlockData> blockData;
+    private final Map<BlockPos, BlockData> blockData;
     private final List<FluidColumn> fluidColumns;
-    private final List<BlockPosWrapper> activePositions;
+    private final List<BlockPos> activePositions;
 
     private final NmsTools nmsTools;
 
@@ -35,7 +36,7 @@ public class SimpleChunkCache implements ChunkCache {
     }
 
     @Override
-    public void loadFluidData(BlockPosWrapper blockPos) {
+    public void loadFluidData(BlockPos blockPos) {
         final var world = space.getWorld();
 
         if (!nmsTools.getFluidState(blockPos.toBlock(world)).isEmpty()) {
@@ -46,33 +47,13 @@ public class SimpleChunkCache implements ChunkCache {
     }
 
     @Override
-    public void loadBlockData(BlockPosWrapper blockPos) {
+    public void loadBlockData(BlockPos blockPos) {
         this.blockData.remove(blockPos);
-
         final var world = space.getWorld();
         final var block = blockPos.toBlock(world);
         final var blockState = block.getState();
-
         if (isValidBlock(blockState)) {
-            final var properties = BlockProperty.getBlockProperty(blockState.getType());
-
-//            if (!blockState.isCollisionShapeFullBlock(level, blockPos) || (properties != null && !properties.isFullBlock())) {
-//                Pattern pattern;
-//
-//                if (space.isServer()) {
-//                    pattern = Transporter.getPatternBuffer().getBlock(Block.getId(blockState));
-//                } else {
-//                    pattern = ChunkCache.genShapeForBlock(level, blockPos, blockState);
-//                }
-//
-//                if (pattern != null && !pattern.getQuads().isEmpty()) {
-//                    shape = MinecraftShape.concave(pattern);
-//                }
-//            }
-
-            // TODO ступеньки хуеньки итд
-            List<BoundingBox> boundingBoxes = nmsTools.boundingBoxes(block, blockState);
-//            BoundingBoxUtils.test(boundingBox);
+            List<BoundingBox> boundingBoxes = nmsTools.boundingBoxes(blockPos, world, blockState);
             if (boundingBoxes.isEmpty()) return;
             MinecraftShape shape = MinecraftShape.convex(boundingBoxes);
             this.blockData.put(blockPos, new BlockData(block, blockState, shape));
@@ -91,7 +72,7 @@ public class SimpleChunkCache implements ChunkCache {
             }
 
             BoundingBox box = rigidBody.boundingBox(new BoundingBox());
-            BoundingBoxUtils.inflate(box, 1.0f);
+            BoundingBoxUtils.inflate(box, 2.0f);
 
             nmsTools.betweenClosedStream(box).forEach(blockPos -> {
                 this.activePositions.add(blockPos);
@@ -131,12 +112,12 @@ public class SimpleChunkCache implements ChunkCache {
     }
 
     @Override
-    public Optional<BlockData> getBlockData(BlockPosWrapper blockPos) {
+    public Optional<BlockData> getBlockData(BlockPos blockPos) {
         return Optional.ofNullable(this.blockData.get(blockPos));
     }
 
     @Override
-    public Optional<FluidColumn> getFluidColumn(BlockPosWrapper blockPos) {
+    public Optional<FluidColumn> getFluidColumn(BlockPos blockPos) {
         for (var column : getFluidColumns()) {
             if (column.contains(blockPos)) {
                 return Optional.of(column);

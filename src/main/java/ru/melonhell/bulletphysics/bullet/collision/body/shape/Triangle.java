@@ -27,18 +27,6 @@ public class Triangle {
         final var triangles = new ArrayList<Triangle>();
 
         for (var quad : getQuads(boundingBox)) {
-//            final var centroid = new Vector3f();
-//
-//            for (var point : quad.getPoints()) {
-//                centroid.addLocal(point);
-//            }
-//
-//            centroid.divideLocal(4);
-//
-//            triangles.add(new Triangle(quad.getPoints().get(0), centroid, quad.getPoints().get(1)));
-//            triangles.add(new Triangle(quad.getPoints().get(1), centroid, quad.getPoints().get(2)));
-//            triangles.add(new Triangle(quad.getPoints().get(2), centroid, quad.getPoints().get(3)));
-//            triangles.add(new Triangle(quad.getPoints().get(3), centroid, quad.getPoints().get(0)));
             triangles.add(new Triangle(quad.p0(), quad.p1(), quad.p2()));
             triangles.add(new Triangle(quad.p2(), quad.p3(), quad.p0()));
         }

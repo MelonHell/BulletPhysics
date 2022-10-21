@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import ru.melonhell.bulletphysics.bullet.collision.body.element.PhysicsElement;
 import ru.melonhell.bulletphysics.bullet.collision.body.shape.Triangle;
 import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
-import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
+import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 import ru.melonhell.bulletphysics.utils.math.Convert;
 
 import java.util.ArrayList;
@@ -85,7 +85,7 @@ public class PressureGenerator {
                     totalCrossSectionalArea += crossSectionalArea;
                 }
 
-                final var blockPos = new BlockPosWrapper(
+                final var blockPos = new BlockPos(
                         (int) (location.x + centroid.x),
                         (int) (location.y + centroid.y),
                         (int) (location.z + centroid.z));
@@ -108,7 +108,7 @@ public class PressureGenerator {
                 final var centroid = triangle.getCentroid();
                 final var area = triangle.getArea();
 
-                final var blockPos = new BlockPosWrapper(
+                final var blockPos = new BlockPos(
                         (int) (location.x + centroid.x),
                         (int) (location.y + centroid.y),
                         (int) (location.z + centroid.z));
@@ -119,7 +119,7 @@ public class PressureGenerator {
                     final var waterHeight = chunkCache.getFluidColumn(blockPos)
                             .map(fluidColumn -> (float) fluidColumn.getTop().block().getY() + fluidColumn.getTopHeight(posRelativeToBlockCenter) - location.y - centroid.y).orElse(0.0f);
 
-                    chunkCache.getFluidColumn(new BlockPosWrapper((int) location.x, (int) location.y, (int) location.z)).ifPresent(fluidColumn -> {
+                    chunkCache.getFluidColumn(new BlockPos((int) location.x, (int) location.y, (int) location.z)).ifPresent(fluidColumn -> {
                         final var flowForce = new Vector3f(fluidColumn.getFlow());
 
                         if (Float.isFinite(flowForce.lengthSquared()) && flowForce.lengthSquared() > 0.0f) {

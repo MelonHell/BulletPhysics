@@ -19,7 +19,7 @@ import ru.melonhell.bulletphysics.bullet.collision.space.generator.PressureGener
 import ru.melonhell.bulletphysics.bullet.collision.space.generator.TerrainGenerator;
 import ru.melonhell.bulletphysics.bullet.thread.PhysicsThread;
 import ru.melonhell.bulletphysics.nms.NmsTools;
-import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
+import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -38,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * see PhysicsSpaceEvents
  */
 public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionListener {
-    private final Map<BlockPosWrapper, TerrainRigidBody> terrainMap;
+    private final Map<BlockPos, TerrainRigidBody> terrainMap;
     private final Map<PhysicsCollisionObject, PhysicsElement> physicsElementMap = new HashMap<>();
     private final JavaPlugin javaPlugin;
     @Getter
@@ -65,9 +65,9 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         this.world = world;
         this.chunkCache = new SimpleChunkCache(this, nmsTools);
         this.terrainMap = new ConcurrentHashMap<>();
-        this.setGravity(new Vector3f(0, -9.807f, 0));
+        this.setGravity(new Vector3f(0, -9.8f, 0));
         this.addCollisionListener(this);
-        this.setAccuracy(1f / 60f);
+        this.setAccuracy(1f / 20f);
     }
 
     /**
@@ -127,9 +127,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         if (!collisionObject.isInWorld()) {
             PhysicsElement physicsElement = physicsElementMap.get(collisionObject);
             if (physicsElement != null) {
-
-//                Bukkit.getPluginManager().callEvent(new PhysicsSpaceElementAddedEvent(this, rigidBody));
-
                 if (!collisionObject.isInWorld()) {
                     collisionObject.activate(true);
                     physicsElement.getFrame().set(
@@ -158,7 +155,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
 
             PhysicsElement physicsElement = physicsElementMap.get(collisionObject);
             if (physicsElement != null) {
-//                Bukkit.getPluginManager().callEvent(new PhysicsSpaceElementRemovedEvent(this, rigidBody));
             } else if (collisionObject instanceof TerrainRigidBody terrain) {
                 this.removeTerrainObjectAt(terrain.getBlockPos());
             }
@@ -169,13 +165,13 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         return this.stepping;
     }
 
-    public void doBlockUpdate(BlockPosWrapper blockPos) {
+    public void doBlockUpdate(BlockPos blockPos) {
         this.chunkCache.loadBlockData(blockPos);
         this.chunkCache.loadFluidData(blockPos);
         this.wakeNearbyElementRigidBodies(blockPos);
     }
 
-    public void wakeNearbyElementRigidBodies(BlockPosWrapper blockPos) {
+    public void wakeNearbyElementRigidBodies(BlockPos blockPos) {
         for (var elementRigidBodyData : getElementRigidBodyDataList()) {
             if (!elementRigidBodyData.isTerrainLoadingEnabled()) {
                 continue;
@@ -187,15 +183,15 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         }
     }
 
-    public Map<BlockPosWrapper, TerrainRigidBody> getTerrainMap() {
+    public Map<BlockPos, TerrainRigidBody> getTerrainMap() {
         return new HashMap<>(this.terrainMap);
     }
 
-    public Optional<TerrainRigidBody> getTerrainObjectAt(BlockPosWrapper blockPos) {
+    public Optional<TerrainRigidBody> getTerrainObjectAt(BlockPos blockPos) {
         return Optional.ofNullable(terrainMap.get(blockPos));
     }
 
-    public void removeTerrainObjectAt(BlockPosWrapper blockPos) {
+    public void removeTerrainObjectAt(BlockPos blockPos) {
         final var removed = terrainMap.remove(blockPos);
 
         if (removed != null) {

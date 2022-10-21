@@ -13,7 +13,7 @@ import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
 import ru.melonhell.bulletphysics.bullet.collision.space.SpaceService;
 import ru.melonhell.bulletphysics.bullet.collision.space.generator.EntityCollisionGenerator;
 import ru.melonhell.bulletphysics.bullet.thread.PhysicsThread;
-import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
+import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 import ru.spliterash.springspigot.listener.SpigotListener;
 
 import javax.annotation.PostConstruct;
@@ -56,6 +56,6 @@ public class ServerEventHandler implements Listener {
     }
 
     private void blockUpdate(Block block) {
-        spaceService.get(block.getWorld()).doBlockUpdate(new BlockPosWrapper(block));
+        spaceService.get(block.getWorld()).doBlockUpdate(new BlockPos(block));
     }
 }

@@ -1,21 +1,23 @@
 package ru.melonhell.bulletphysics.nms;
 
 import com.jme3.bounding.BoundingBox;
-import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_19_R1.block.CraftBlock;
 import org.bukkit.craftbukkit.v1_19_R1.block.CraftBlockState;
 import org.bukkit.craftbukkit.v1_19_R1.block.CraftBlockStates;
 import org.bukkit.util.Vector;
 import org.springframework.stereotype.Component;
-import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
+import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 import ru.melonhell.bulletphysics.nms.wrappers.FluidStateWrapper;
 
 import java.util.List;
@@ -26,8 +28,8 @@ public class NmsTools_v1_19_2 implements NmsTools {
 
 
     @Override
-    public Stream<BlockPosWrapper> betweenClosedStream(BoundingBox aabb) {
-        return BlockPos.betweenClosedStream(NmsWrapUtils_v1_19_2.convert(aabb)).map(blockPos -> new BlockPosWrapper(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+    public Stream<BlockPos> betweenClosedStream(BoundingBox aabb) {
+        return net.minecraft.core.BlockPos.betweenClosedStream(NmsWrapUtils_v1_19_2.convert(aabb)).map(blockPos -> new BlockPos(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
     }
 
     @Override
@@ -70,9 +72,11 @@ public class NmsTools_v1_19_2 implements NmsTools {
     }
 
     @Override
-    public List<BoundingBox> boundingBoxes(Block block, BlockState blockState) {
+    public List<BoundingBox> boundingBoxes(BlockPos blockPos, World world, BlockState blockState) {
         net.minecraft.world.level.block.state.BlockState stateHandle = ((CraftBlockState) blockState).getHandle();
-        VoxelShape voxelShape = stateHandle.getCollisionShape(((CraftBlock) block).getHandle(), ((CraftBlock) block).getPosition());
+        net.minecraft.core.BlockPos blockPosHandle = new net.minecraft.core.BlockPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        ServerLevel worldHandle = ((CraftWorld) world).getHandle();
+        VoxelShape voxelShape = stateHandle.getCollisionShape(worldHandle, blockPosHandle);
         List<AABB> boundingBoxes = voxelShape.toAabbs();
         return boundingBoxes.stream().map(NmsWrapUtils_v1_19_2::convert).toList();
     }

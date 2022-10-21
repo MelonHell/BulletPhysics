@@ -3,7 +3,7 @@ package ru.melonhell.bulletphysics.bullet.collision.space.cache;
 import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
 import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.BlockData;
 import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.FluidColumn;
-import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
+import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,29 +16,11 @@ import java.util.Optional;
  * @see MinecraftSpace#step
  */
 public interface ChunkCache {
-//    static Pattern genShapeForBlock(BlockGetter blockGetter, BlockPos blockPos, BlockState blockState) {
-//        final var blockEntity = blockGetter.getBlockEntity(blockPos);
-//        final var transformation = new PoseStack();
-//        transformation.scale(0.95f, 0.95f, 0.95f);
-//        transformation.translate(-0.5f, -0.5f, -0.5f);
-//
-//        try {
-//            if (blockEntity != null) {
-//                return Disassembler.getBlockEntity(blockEntity, transformation);
-//            } else {
-//                return Disassembler.getBlock(blockState, transformation);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-
     void refreshAll();
 
-    void loadBlockData(BlockPosWrapper blockPos);
+    void loadBlockData(BlockPos blockPos);
 
-    void loadFluidData(BlockPosWrapper blockPos);
+    void loadFluidData(BlockPos blockPos);
 
     MinecraftSpace getSpace();
 
@@ -46,7 +28,7 @@ public interface ChunkCache {
 
     List<FluidColumn> getFluidColumns();
 
-    Optional<BlockData> getBlockData(BlockPosWrapper blockPos);
+    Optional<BlockData> getBlockData(BlockPos blockPos);
 
-    Optional<FluidColumn> getFluidColumn(BlockPosWrapper blockPos);
+    Optional<FluidColumn> getFluidColumn(BlockPos blockPos);
 }

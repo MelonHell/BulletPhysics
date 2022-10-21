@@ -22,15 +22,4 @@ public class BoundingBoxUtils {
         Vector3f max2 = boundingBox2.getMax(null);
         return min1.x < max2.x && max1.x > min2.x && min1.y < max2.y && max1.y > min2.y && min1.z < max2.z && max1.z > min2.z;
     }
-
-    public void test(BoundingBox boundingBox) {
-        boundingBox.setMinMax(boundingBox.getMin(null).subtract(0.5f, 0.5f, 0.5f), boundingBox.getMax(null).subtract(0.5f, 0.5f, 0.5f));
-    }
-    public void clearCenter(BoundingBox boundingBox) {
-        float xExtent = boundingBox.getXExtent();
-        float yExtent = boundingBox.getYExtent();
-        float zExtent = boundingBox.getZExtent();
-
-        boundingBox.setMinMax(new Vector3f(-xExtent, -yExtent, -zExtent), new Vector3f(xExtent, yExtent, zExtent));
-    }
 }

@@ -2,10 +2,10 @@ package ru.melonhell.bulletphysics.utils.math;
 
 import com.jme3.math.Vector3f;
 import org.bukkit.util.Vector;
-import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
+import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 
 public class Convert {
-    public static Vector3f toBullet(BlockPosWrapper blockPos) {
+    public static Vector3f toBullet(BlockPos blockPos) {
         return new Vector3f(blockPos.getX() + 0.5f, blockPos.getY() + 0.5f, blockPos.getZ() + 0.5f);
     }
 

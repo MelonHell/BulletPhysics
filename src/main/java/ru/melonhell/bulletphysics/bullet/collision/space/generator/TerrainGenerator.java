@@ -32,7 +32,7 @@ public class TerrainGenerator {
             }
 
             BoundingBox box = rigidBody.boundingBox(new BoundingBox());
-            BoundingBoxUtils.inflate(box, 0.5f);
+            BoundingBoxUtils.inflate(box, 1.0f);
 
             nmsTools.betweenClosedStream(box).forEach(blockPos -> {
                 chunkCache.getBlockData(blockPos).ifPresent(blockData -> {

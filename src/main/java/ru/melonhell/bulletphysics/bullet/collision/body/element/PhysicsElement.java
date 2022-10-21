@@ -7,7 +7,7 @@ import com.jme3.math.Vector3f;
 import lombok.Getter;
 import lombok.Setter;
 import ru.melonhell.bulletphysics.bullet.collision.body.shape.MinecraftShape;
-import ru.melonhell.bulletphysics.nms.wrappers.BlockPosWrapper;
+import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 import ru.melonhell.bulletphysics.utils.math.BoundingBoxUtils;
 
 @Getter
@@ -31,7 +31,7 @@ public class PhysicsElement {
         getFrame().from(getFrame(), rigidBody.getPhysicsLocation(new Vector3f()), rigidBody.getPhysicsRotation(new Quaternion()));
     }
 
-    public boolean isNear(BlockPosWrapper blockPos) {
+    public boolean isNear(BlockPos blockPos) {
         BoundingBox boundingBox1 = rigidBody.boundingBox(new BoundingBox());
         BoundingBox boundingBox2 = blockPos.boundingBox();
         BoundingBoxUtils.inflate(boundingBox2, 0.5f);
