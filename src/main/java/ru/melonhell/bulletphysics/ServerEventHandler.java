@@ -2,7 +2,9 @@ package ru.melonhell.bulletphysics;
 
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -13,6 +15,7 @@ import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
 import ru.melonhell.bulletphysics.bullet.collision.space.SpaceService;
 import ru.melonhell.bulletphysics.bullet.collision.space.generator.EntityCollisionGenerator;
 import ru.melonhell.bulletphysics.bullet.thread.PhysicsThread;
+import ru.melonhell.bulletphysics.nms.NmsTools;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 import ru.spliterash.springspigot.listener.SpigotListener;
 
@@ -25,6 +28,7 @@ public class ServerEventHandler implements Listener {
     private final JavaPlugin javaPlugin;
     private final SpaceService spaceService;
     private final PhysicsThread physicsThread;
+    private final NmsTools nmsTools;
     private BukkitTask bukkitTask;
 
     @PostConstruct
@@ -47,15 +51,15 @@ public class ServerEventHandler implements Listener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        blockUpdate(event.getBlock());
+        blockUpdate(event.getBlock(), event.getBlock().getState());
     }
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        blockUpdate(event.getBlock());
+        blockUpdate(event.getBlock(), nmsTools.createBlockState(Material.AIR));
     }
 
-    private void blockUpdate(Block block) {
-        spaceService.get(block.getWorld()).doBlockUpdate(new BlockPos(block));
+    private void blockUpdate(Block block, BlockState blockState) {
+        spaceService.get(block.getWorld()).doBlockUpdate(new BlockPos(block), blockState);
     }
 }

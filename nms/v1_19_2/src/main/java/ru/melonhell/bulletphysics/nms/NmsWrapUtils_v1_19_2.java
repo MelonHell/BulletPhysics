@@ -9,12 +9,6 @@ import ru.melonhell.bulletphysics.nms.wrappers.FluidStateWrapper;
 
 @UtilityClass
 public class NmsWrapUtils_v1_19_2 {
-    public AABB convert(BoundingBox boundingBox) {
-        Vector3f min = boundingBox.getMin(null);
-        Vector3f max = boundingBox.getMax(null);
-        return new AABB(min.x, min.y, min.z, max.x, max.y, max.z);
-    }
-
     public BoundingBox convert(AABB aabb) {
         return new BoundingBox(new Vector3f((float) aabb.minX, (float) aabb.minY, (float) aabb.minZ), new Vector3f((float) aabb.maxX, (float) aabb.maxY, (float) aabb.maxZ));
     }

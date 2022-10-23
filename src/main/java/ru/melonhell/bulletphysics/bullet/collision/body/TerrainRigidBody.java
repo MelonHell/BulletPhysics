@@ -6,7 +6,7 @@ import com.jme3.math.Vector3f;
 import org.bukkit.block.BlockState;
 import ru.melonhell.bulletphysics.bullet.collision.body.shape.MinecraftShape;
 import ru.melonhell.bulletphysics.bullet.collision.space.block.BlockProperty;
-import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.BlockData;
+import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.PhysicsBlockData;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 
 public class TerrainRigidBody extends PhysicsRigidBody {
@@ -23,11 +23,11 @@ public class TerrainRigidBody extends PhysicsRigidBody {
         this.setPhysicsLocation(new Vector3f(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
     }
 
-    public static TerrainRigidBody from(BlockData blockData) {
-        final var blockProperty = BlockProperty.getBlockProperty(blockData.blockState().getType());
+    public static TerrainRigidBody from(PhysicsBlockData physicsBlockData) {
+        final var blockProperty = BlockProperty.getBlockProperty(physicsBlockData.blockState().getType());
         final var friction = blockProperty == null ? 0.75f : blockProperty.friction();
         final var restitution = blockProperty == null ? 0.25f : blockProperty.restitution();
-        return new TerrainRigidBody(blockData.shape(), new BlockPos(blockData.block()), blockData.blockState(), friction, restitution);
+        return new TerrainRigidBody(physicsBlockData.shape(), new BlockPos(physicsBlockData.block()), physicsBlockData.blockState(), friction, restitution);
     }
 
     public BlockPos getBlockPos() {

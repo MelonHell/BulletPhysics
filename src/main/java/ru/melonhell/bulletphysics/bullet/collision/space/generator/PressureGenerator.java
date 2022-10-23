@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import ru.melonhell.bulletphysics.bullet.collision.body.element.PhysicsElement;
 import ru.melonhell.bulletphysics.bullet.collision.body.shape.Triangle;
 import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
+import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.FluidColumn;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 import ru.melonhell.bulletphysics.utils.math.Convert;
 
@@ -34,7 +35,7 @@ public class PressureGenerator {
     public final int SEA_LEVEL = 62;                   // m
 
     public void step(MinecraftSpace space) {
-        final var chunkCache = space.getChunkCache();
+        final var chunkCache = space.getBlockCache();
         final var timeStep = space.getAccuracy();
         final var gravity = space.getGravity(new Vector3f());
 
@@ -43,7 +44,7 @@ public class PressureGenerator {
         final var angularVelocity = new Vector3f();
         final var rotation = new Quaternion();
 
-        for (var elementRigidBodyData : space.getElementRigidBodyDataList()) {
+        for (var elementRigidBodyData : space.getPhysicsElements()) {
             PhysicsRigidBody rigidBody = elementRigidBodyData.getRigidBody();
             if (!rigidBody.isActive() || (elementRigidBodyData.getBuoyancyType() == PhysicsElement.BuoyancyType.NONE && elementRigidBodyData.getDragType() == PhysicsElement.DragType.NONE)) {
                 elementRigidBodyData.getSleepTimer().reset();
@@ -92,13 +93,14 @@ public class PressureGenerator {
 
                 final var posRelativeToBlockCenter = new Vector3f(centroid).add(location).subtract(Convert.toBullet(blockPos));
 
-                chunkCache.getFluidColumn(blockPos).ifPresent(fluidColumn -> {
+                FluidColumn fluidColumn = chunkCache.getFluidColumn(blockPos);
+                if (fluidColumn != null) {
                     final var waterHeight = fluidColumn.getTop().block().getY() + fluidColumn.getTopHeight(posRelativeToBlockCenter) - location.y - centroid.y;
 
                     if (waterHeight > 0.0f) {
                         submergedTriangles.add(triangle);
                     }
-                });
+                }
             }
 
             final var totalArea = totalCrossSectionalArea;
@@ -116,16 +118,20 @@ public class PressureGenerator {
                 if (submergedTriangles.contains(triangle)) {
                     final var posRelativeToBlockCenter = new Vector3f(centroid).add(location).subtract(Convert.toBullet(blockPos));
 
-                    final var waterHeight = chunkCache.getFluidColumn(blockPos)
-                            .map(fluidColumn -> (float) fluidColumn.getTop().block().getY() + fluidColumn.getTopHeight(posRelativeToBlockCenter) - location.y - centroid.y).orElse(0.0f);
+                    FluidColumn fluidColumn = chunkCache.getFluidColumn(blockPos);
+                    var waterHeight = 0.0f;
+                    if (fluidColumn != null) {
+                        waterHeight = (float) fluidColumn.getTop().block().getY() + fluidColumn.getTopHeight(posRelativeToBlockCenter) - location.y - centroid.y;
+                    }
 
-                    chunkCache.getFluidColumn(new BlockPos((int) location.x, (int) location.y, (int) location.z)).ifPresent(fluidColumn -> {
-                        final var flowForce = new Vector3f(fluidColumn.getFlow());
+                    FluidColumn fluidColumn1 = chunkCache.getFluidColumn(new BlockPos((int) location.x, (int) location.y, (int) location.z));
+                    if (fluidColumn1 != null) {
+                        final var flowForce = new Vector3f(fluidColumn1.getFlow());
 
                         if (Float.isFinite(flowForce.lengthSquared()) && flowForce.lengthSquared() > 0.0f) {
                             rigidBody.applyForce(flowForce, centroid);
                         }
-                    });
+                    }
 
                     /* Do water buoyancy */
                     if (elementRigidBodyData.isWaterBuoyancyEnabled()) {

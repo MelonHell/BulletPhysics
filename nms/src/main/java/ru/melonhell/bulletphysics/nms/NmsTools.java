@@ -10,11 +10,8 @@ import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 import ru.melonhell.bulletphysics.nms.wrappers.FluidStateWrapper;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 public interface NmsTools {
-
-    Stream<BlockPos> betweenClosedStream(BoundingBox aabb);
 
     FluidStateWrapper getFluidState(Block block);
 
@@ -25,6 +22,8 @@ public interface NmsTools {
     boolean collidableCheck(BlockState blockState);
 
     int getBlockId(BlockState blockState);
+
+    boolean equalsById(BlockState blockState1, BlockState blockState2);
 
     BoundingBox boundingBox(Block block, BlockState blockState);
 

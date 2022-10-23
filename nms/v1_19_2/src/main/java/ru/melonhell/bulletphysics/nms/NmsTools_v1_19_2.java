@@ -21,16 +21,9 @@ import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 import ru.melonhell.bulletphysics.nms.wrappers.FluidStateWrapper;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 @Component
 public class NmsTools_v1_19_2 implements NmsTools {
-
-
-    @Override
-    public Stream<BlockPos> betweenClosedStream(BoundingBox aabb) {
-        return net.minecraft.core.BlockPos.betweenClosedStream(NmsWrapUtils_v1_19_2.convert(aabb)).map(blockPos -> new BlockPos(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
-    }
 
     @Override
     public FluidStateWrapper getFluidState(Block block) {
@@ -63,10 +56,14 @@ public class NmsTools_v1_19_2 implements NmsTools {
     }
 
     @Override
+    public boolean equalsById(BlockState blockState1, BlockState blockState2) {
+        return getBlockId(blockState1) == getBlockId(blockState2);
+    }
+
+    @Override
     public BoundingBox boundingBox(Block block, BlockState blockState) {
         net.minecraft.world.level.block.state.BlockState stateHandle = ((CraftBlockState) blockState).getHandle();
         VoxelShape voxelShape = stateHandle.getCollisionShape(((CraftBlock) block).getHandle(), ((CraftBlock) block).getPosition());
-//        AABB boundingBox = voxelShape.isEmpty() ? new AABB(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f) : voxelShape.bounds();
         if (voxelShape.isEmpty()) return null;
         return NmsWrapUtils_v1_19_2.convert(voxelShape.bounds());
     }

@@ -1,12 +1,13 @@
 package ru.melonhell.bulletphysics.bullet.collision.space.cache;
 
+import org.bukkit.block.BlockState;
+import org.jetbrains.annotations.Nullable;
 import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
-import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.BlockData;
 import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.FluidColumn;
+import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.PhysicsBlockData;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Used for storing block that can be queried during physics execution.
@@ -15,20 +16,22 @@ import java.util.Optional;
  *
  * @see MinecraftSpace#step
  */
-public interface ChunkCache {
+public interface BlockCache {
     void refreshAll();
 
-    void loadBlockData(BlockPos blockPos);
+    void loadBlockData(BlockPos blockPos, BlockState blockState);
 
     void loadFluidData(BlockPos blockPos);
 
     MinecraftSpace getSpace();
 
-    List<BlockData> getBlockData();
+    List<PhysicsBlockData> getPhysicsBlockDataMap();
 
     List<FluidColumn> getFluidColumns();
 
-    Optional<BlockData> getBlockData(BlockPos blockPos);
+    @Nullable
+    PhysicsBlockData getBlockData(BlockPos blockPos);
 
-    Optional<FluidColumn> getFluidColumn(BlockPos blockPos);
+    @Nullable
+    FluidColumn getFluidColumn(BlockPos blockPos);
 }
