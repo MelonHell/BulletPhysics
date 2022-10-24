@@ -35,7 +35,7 @@ public class TerrainGenerator {
             PhysicsRigidBody rigidBody = elementRigidBodyData.getRigidBody();
             if (!elementRigidBodyData.isTerrainLoadingEnabled() || !rigidBody.isActive()) continue;
             BoundingBox box = rigidBody.boundingBox(new BoundingBox());
-            BoundingBoxUtils.inflate(box, 1.5f);
+            BoundingBoxUtils.inflate(box, 3f);
             BetweenClosedUtils.betweenClosed(box, betweenClosed);
         }
 

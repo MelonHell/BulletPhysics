@@ -28,4 +28,6 @@ public interface NmsTools {
     List<BoundingBox> boundingBoxes(Block block, BlockState blockState);
 
     BlockState createBlockState(Material material);
+
+    BlockState getBlockState(Block block);
 }

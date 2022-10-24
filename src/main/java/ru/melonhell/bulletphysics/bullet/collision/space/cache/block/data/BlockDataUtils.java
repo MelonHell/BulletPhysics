@@ -2,14 +2,12 @@ package ru.melonhell.bulletphysics.bullet.collision.space.cache.block.data;
 
 import com.jme3.bounding.BoundingBox;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.springframework.stereotype.Component;
 import ru.melonhell.bulletphysics.bullet.collision.body.shape.MinecraftShape;
 import ru.melonhell.bulletphysics.bullet.collision.space.block.BlockProperty;
 import ru.melonhell.bulletphysics.nms.NmsTools;
-import ru.melonhell.bulletphysics.utils.SchedulerUtils;
 
 import java.util.List;
 
@@ -19,7 +17,7 @@ public class BlockDataUtils {
     private final NmsTools nmsTools;
 
     public PhysicsBlockData getPhysicsBlockData(Block block) {
-        return getPhysicsBlockData(block, getBlockState(block));
+        return getPhysicsBlockData(block, nmsTools.getBlockState(block));
     }
 
     public PhysicsBlockData getPhysicsBlockData(Block block, BlockState blockState) {
@@ -43,14 +41,5 @@ public class BlockDataUtils {
 
         if (properties != null) return properties.collidable();
         return nmsTools.collidableCheck(blockState);
-    }
-
-    @SneakyThrows
-    public BlockState getBlockState(Block block) {
-        try {
-            return block.getState(false);
-        } catch (IllegalStateException exception) {
-            return SchedulerUtils.runSyncFuture(block::getState).get();
-        }
     }
 }

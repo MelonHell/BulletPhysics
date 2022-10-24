@@ -8,7 +8,6 @@ import com.jme3.bullet.objects.PhysicsRigidBody;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -93,9 +92,7 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
      * see PhysicsSpaceEvents
      */
     public void step() {
-        Bukkit.getScheduler().runTaskAsynchronously(javaPlugin, () -> {
-            getPhysicsElements().forEach(PhysicsElement::updateFrame);
-        });
+        getPhysicsElements().forEach(PhysicsElement::updateFrame);
 
         if (lastStep == 0) {
             lastStep = System.currentTimeMillis();

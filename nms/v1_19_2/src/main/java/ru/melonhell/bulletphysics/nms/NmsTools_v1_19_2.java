@@ -68,7 +68,7 @@ public class NmsTools_v1_19_2 implements NmsTools {
     @Override
     public List<BoundingBox> boundingBoxes(Block block, BlockState blockState) {
         net.minecraft.world.level.block.state.BlockState stateHandle = ((CraftBlockState) blockState).getHandle();
-        net.minecraft.core.BlockPos blockPosHandle = new net.minecraft.core.BlockPos(block.getX(), block.getY(), block.getZ());
+        net.minecraft.core.BlockPos blockPosHandle = ((CraftBlock) block).getPosition();
         LevelAccessor worldHandle = ((CraftBlock) block).getHandle();
         VoxelShape voxelShape = stateHandle.getCollisionShape(worldHandle, blockPosHandle);
         List<AABB> boundingBoxes = voxelShape.toAabbs();
@@ -78,5 +78,12 @@ public class NmsTools_v1_19_2 implements NmsTools {
     @Override
     public BlockState createBlockState(Material material) {
         return CraftBlockStates.getBlockState(material, null);
+    }
+
+    @Override
+    public BlockState getBlockState(Block block) {
+        LevelAccessor worldHandle = ((CraftBlock) block).getHandle();
+        net.minecraft.core.BlockPos blockPosHandle = ((CraftBlock) block).getPosition();
+        return CraftBlockStates.getBlockState(worldHandle, blockPosHandle);
     }
 }
