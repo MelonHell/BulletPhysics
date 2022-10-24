@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import ru.melonhell.bulletphysics.bullet.collision.body.element.PhysicsElement;
 import ru.melonhell.bulletphysics.bullet.collision.body.shape.Triangle;
 import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
-import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.FluidColumn;
+import ru.melonhell.bulletphysics.bullet.collision.space.cache.fluid.data.FluidColumn;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 import ru.melonhell.bulletphysics.utils.math.Convert;
 
@@ -35,7 +35,8 @@ public class PressureGenerator {
     public final int SEA_LEVEL = 62;                   // m
 
     public void step(MinecraftSpace space) {
-        final var chunkCache = space.getBlockCache();
+        final var blockCache = space.getBlockCache();
+        final var fluidCache = space.getFluidCache();
         final var timeStep = space.getAccuracy();
         final var gravity = space.getGravity(new Vector3f());
 
@@ -93,7 +94,7 @@ public class PressureGenerator {
 
                 final var posRelativeToBlockCenter = new Vector3f(centroid).add(location).subtract(Convert.toBullet(blockPos));
 
-                FluidColumn fluidColumn = chunkCache.getFluidColumn(blockPos);
+                FluidColumn fluidColumn = fluidCache.getFluidColumn(blockPos);
                 if (fluidColumn != null) {
                     final var waterHeight = fluidColumn.getTop().block().getY() + fluidColumn.getTopHeight(posRelativeToBlockCenter) - location.y - centroid.y;
 
@@ -118,13 +119,13 @@ public class PressureGenerator {
                 if (submergedTriangles.contains(triangle)) {
                     final var posRelativeToBlockCenter = new Vector3f(centroid).add(location).subtract(Convert.toBullet(blockPos));
 
-                    FluidColumn fluidColumn = chunkCache.getFluidColumn(blockPos);
+                    FluidColumn fluidColumn = fluidCache.getFluidColumn(blockPos);
                     var waterHeight = 0.0f;
                     if (fluidColumn != null) {
                         waterHeight = (float) fluidColumn.getTop().block().getY() + fluidColumn.getTopHeight(posRelativeToBlockCenter) - location.y - centroid.y;
                     }
 
-                    FluidColumn fluidColumn1 = chunkCache.getFluidColumn(new BlockPos((int) location.x, (int) location.y, (int) location.z));
+                    FluidColumn fluidColumn1 = fluidCache.getFluidColumn(new BlockPos((int) location.x, (int) location.y, (int) location.z));
                     if (fluidColumn1 != null) {
                         final var flowForce = new Vector3f(fluidColumn1.getFlow());
 

@@ -15,15 +15,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 import ru.melonhell.bulletphysics.bullet.collision.body.TerrainRigidBody;
 import ru.melonhell.bulletphysics.bullet.collision.body.element.PhysicsElement;
-import ru.melonhell.bulletphysics.bullet.collision.space.cache.BlockCache;
-import ru.melonhell.bulletphysics.bullet.collision.space.cache.SimpleBlockCache;
+import ru.melonhell.bulletphysics.bullet.collision.space.cache.block.BlockCache;
+import ru.melonhell.bulletphysics.bullet.collision.space.cache.block.BlockCacheFactory;
+import ru.melonhell.bulletphysics.bullet.collision.space.cache.fluid.FluidCache;
+import ru.melonhell.bulletphysics.bullet.collision.space.cache.fluid.FluidCacheFactory;
 import ru.melonhell.bulletphysics.bullet.collision.space.generator.PressureGenerator;
 import ru.melonhell.bulletphysics.bullet.collision.space.generator.TerrainGenerator;
 import ru.melonhell.bulletphysics.bullet.thread.PhysicsThread;
-import ru.melonhell.bulletphysics.nms.NmsTools;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -52,18 +55,21 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     private final World world;
     @Getter
     private final BlockCache blockCache;
+    @Getter
+    private final FluidCache fluidCache;
 
     private volatile boolean stepping;
     private long lastStep = 0;
 
-    public MinecraftSpace(JavaPlugin javaPlugin, PhysicsThread physicsThread, NmsTools nmsTools, TerrainGenerator terrainGenerator, PressureGenerator pressureGenerator, World world) {
+    public MinecraftSpace(JavaPlugin javaPlugin, PhysicsThread physicsThread, BlockCacheFactory blockCacheFactory, FluidCacheFactory fluidCacheFactory, TerrainGenerator terrainGenerator, PressureGenerator pressureGenerator, World world) {
         super(BroadphaseType.DBVT);
         this.javaPlugin = javaPlugin;
         this.physicsThread = physicsThread;
         this.pressureGenerator = pressureGenerator;
         this.terrainGenerator = terrainGenerator;
         this.world = world;
-        this.blockCache = new SimpleBlockCache(this, nmsTools);
+        this.blockCache = blockCacheFactory.create(this);
+        this.fluidCache = fluidCacheFactory.create(this);
         this.terrainMap = new HashMap<>();
         this.physicsElementMap = new HashMap<>();
         this.setGravity(new Vector3f(0, -9.8f, 0));
@@ -90,7 +96,6 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
         Bukkit.getScheduler().runTaskAsynchronously(javaPlugin, () -> {
             getPhysicsElements().forEach(PhysicsElement::updateFrame);
         });
-        blockCache.refreshAll();
 
         if (lastStep == 0) {
             lastStep = System.currentTimeMillis();
@@ -167,8 +172,8 @@ public class MinecraftSpace extends PhysicsSpace implements PhysicsCollisionList
     }
 
     public void doBlockUpdate(BlockPos blockPos, BlockState blockState) {
-        this.blockCache.loadBlockData(blockPos, blockState);
-        this.blockCache.loadFluidData(blockPos);
+        this.blockCache.refreshBlockData(blockPos, blockState);
+        this.fluidCache.refreshFluidData(blockPos);
         this.wakeNearbyElementRigidBodies(blockPos);
     }
 

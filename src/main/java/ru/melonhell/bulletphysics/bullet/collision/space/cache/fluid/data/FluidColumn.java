@@ -1,4 +1,4 @@
-package ru.melonhell.bulletphysics.bullet.collision.space.cache.data;
+package ru.melonhell.bulletphysics.bullet.collision.space.cache.fluid.data;
 
 import com.jme3.math.Vector3f;
 import org.bukkit.block.Block;

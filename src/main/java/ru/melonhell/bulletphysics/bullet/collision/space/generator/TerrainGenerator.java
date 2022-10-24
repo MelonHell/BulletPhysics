@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.melonhell.bulletphysics.bullet.collision.body.TerrainRigidBody;
 import ru.melonhell.bulletphysics.bullet.collision.space.MinecraftSpace;
-import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.PhysicsBlockData;
+import ru.melonhell.bulletphysics.bullet.collision.space.cache.block.data.PhysicsBlockData;
 import ru.melonhell.bulletphysics.nms.NmsTools;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 import ru.melonhell.bulletphysics.utils.math.BetweenClosedUtils;
@@ -27,7 +27,7 @@ public class TerrainGenerator {
     private final NmsTools nmsTools;
 
     public void step(MinecraftSpace space) {
-        final var chunkCache = space.getBlockCache();
+        final var blockCache = space.getBlockCache();
         final var keep = new HashSet<TerrainRigidBody>();
         List<BlockPos> betweenClosed = new ArrayList<>();
 
@@ -35,12 +35,12 @@ public class TerrainGenerator {
             PhysicsRigidBody rigidBody = elementRigidBodyData.getRigidBody();
             if (!elementRigidBodyData.isTerrainLoadingEnabled() || !rigidBody.isActive()) continue;
             BoundingBox box = rigidBody.boundingBox(new BoundingBox());
-            BoundingBoxUtils.inflate(box, 1.0f);
+            BoundingBoxUtils.inflate(box, 1.5f);
             BetweenClosedUtils.betweenClosed(box, betweenClosed);
         }
 
         for (BlockPos blockPos : betweenClosed) {
-            PhysicsBlockData physicsBlockData = chunkCache.getBlockData(blockPos);
+            PhysicsBlockData physicsBlockData = blockCache.getBlockData(blockPos);
             if (physicsBlockData != null && physicsBlockData.shape() != null) {
                 TerrainRigidBody terrain = space.getTerrainObjectAt(blockPos);
                 if (terrain != null) {

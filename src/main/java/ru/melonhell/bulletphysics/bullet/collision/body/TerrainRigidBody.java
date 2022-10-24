@@ -6,7 +6,7 @@ import com.jme3.math.Vector3f;
 import org.bukkit.block.BlockState;
 import ru.melonhell.bulletphysics.bullet.collision.body.shape.MinecraftShape;
 import ru.melonhell.bulletphysics.bullet.collision.space.block.BlockProperty;
-import ru.melonhell.bulletphysics.bullet.collision.space.cache.data.PhysicsBlockData;
+import ru.melonhell.bulletphysics.bullet.collision.space.cache.block.data.PhysicsBlockData;
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPos;
 
 public class TerrainRigidBody extends PhysicsRigidBody {

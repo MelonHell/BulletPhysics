@@ -1,4 +1,4 @@
-package ru.melonhell.bulletphysics.bullet.collision.space.cache.data;
+package ru.melonhell.bulletphysics.bullet.collision.space.cache.block.data;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
