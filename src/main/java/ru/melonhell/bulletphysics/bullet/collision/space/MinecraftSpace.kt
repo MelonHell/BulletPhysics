@@ -96,7 +96,10 @@ class MinecraftSpace(
                 this.update((System.currentTimeMillis() - lastStep) / 1000.0f)
                 lastStep = System.currentTimeMillis()
             }, physicsThread)
-            future.thenRun { isStepping = false }
+            future.whenComplete { _, ex ->
+                isStepping = false
+                ex?.printStackTrace()
+            }
         }
     }
 

@@ -2,7 +2,6 @@ package ru.melonhell.bulletphysics.init
 
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.PaperCommandManager
-import org.springframework.beans.BeansException
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.stereotype.Component
 

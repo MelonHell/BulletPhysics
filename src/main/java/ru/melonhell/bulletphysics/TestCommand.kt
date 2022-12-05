@@ -10,7 +10,6 @@ import com.jme3.math.Vector3f
 import org.bukkit.entity.Player
 import org.springframework.stereotype.Component
 import ru.melonhell.bulletphysics.bullet.collision.body.element.PhysicsElement
-import ru.melonhell.bulletphysics.bullet.collision.body.shape.MinecraftShape
 import ru.melonhell.bulletphysics.bullet.collision.body.shape.impl.ConvexMinecraftShape
 import ru.melonhell.bulletphysics.bullet.collision.space.SpaceService
 

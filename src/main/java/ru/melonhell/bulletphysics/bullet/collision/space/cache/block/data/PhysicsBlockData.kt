@@ -3,7 +3,6 @@ package ru.melonhell.bulletphysics.bullet.collision.space.cache.block.data
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
 import ru.melonhell.bulletphysics.bullet.collision.body.shape.MinecraftShape
-import java.util.*
 
 data class PhysicsBlockData(
     val block: Block,

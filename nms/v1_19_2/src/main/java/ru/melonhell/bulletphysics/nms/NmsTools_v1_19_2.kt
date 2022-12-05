@@ -13,7 +13,6 @@ import org.bukkit.craftbukkit.v1_19_R1.block.CraftBlockStates
 import org.bukkit.util.Vector
 import org.springframework.stereotype.Component
 import ru.melonhell.bulletphysics.nms.wrappers.FluidStateWrapper
-import java.util.function.Function
 
 @Component
 class NmsTools_v1_19_2 : NmsTools {

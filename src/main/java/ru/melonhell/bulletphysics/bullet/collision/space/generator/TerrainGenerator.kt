@@ -28,7 +28,12 @@ class TerrainGenerator(private val nmsTools: NmsTools) {
             betweenClosed(box, betweenClosed)
         }
         for (blockPos in betweenClosed) {
-            val physicsBlockData = blockCache.getBlockData(blockPos)
+            val physicsBlockData = try {
+                blockCache.getBlockData(blockPos)
+            } catch(ex: Exception) {
+                ex.printStackTrace()
+                continue
+            }
             if (physicsBlockData.shape != null) {
                 var terrain = space.getTerrainObjectAt(blockPos)
                 if (terrain != null) {

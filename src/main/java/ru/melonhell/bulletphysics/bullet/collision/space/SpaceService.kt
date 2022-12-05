@@ -1,7 +1,6 @@
 package ru.melonhell.bulletphysics.bullet.collision.space
 
 import org.bukkit.World
-import org.bukkit.plugin.java.JavaPlugin
 import org.springframework.stereotype.Component
 import ru.melonhell.bulletphysics.bullet.collision.space.cache.block.impl.GuavaBlockCacheFactory
 import ru.melonhell.bulletphysics.bullet.collision.space.cache.fluid.impl.GuavaFluidCacheFactory
@@ -11,7 +10,6 @@ import ru.melonhell.bulletphysics.bullet.thread.PhysicsThread
 
 @Component
 class SpaceService(
-    private val javaPlugin: JavaPlugin,
     private val physicsThread: PhysicsThread,
     private val terrainGenerator: TerrainGenerator,
     private val pressureGenerator: PressureGenerator,
