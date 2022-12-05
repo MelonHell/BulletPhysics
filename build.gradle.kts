@@ -2,18 +2,14 @@ import groovy.util.Node
 import groovy.util.NodeList
 
 plugins {
-    `java-library`
+    kotlin("jvm") version "1.7.20"
     `maven-publish`
-    id("io.freefair.lombok") version "6.3.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.2"
 }
 
-group = "ru.melonhell"
-
 allprojects {
-    apply(plugin = "java-library")
-    apply(plugin = "io.freefair.lombok")
+    apply(plugin = "kotlin")
 
     version = "1.0.0"
 
@@ -31,8 +27,11 @@ allprojects {
         }
     }
     dependencies {
+        compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.20")
+        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.4")
         compileOnly("ru.spliterash:spring-spigot:1.0.5")
-        implementation("com.github.stephengold:Libbulletjme:16.3.0")
+        implementation("com.github.stephengold:Libbulletjme:17.2.0")
     }
 }
 
@@ -42,12 +41,15 @@ bukkit {
     apiVersion = "1.13"
     authors = listOf("MelonHell")
     depend = listOf("SpringSpigot")
+    libraries = listOf(
+        "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.20",
+        "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4",
+        "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.4",
+    )
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT")
-
-    implementation("com.github.stephengold:Libbulletjme:16.3.0")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
     api(project(":nms"))
 }
@@ -62,8 +64,8 @@ tasks {
     shadowJar {
         archiveVersion.set("")
         archiveClassifier.set("")
-        relocate("co.aikar.commands", "dev.lazurite.rayon.libs.acf")
-        relocate("co.aikar.locales", "dev.lazurite.rayon.libs.acf.locales")
+        relocate("co.aikar.commands", "ru.melonhell.bulletphysics.libs.acf")
+        relocate("co.aikar.locales", "ru.melonhell.bulletphysics.libs.acf.locales")
     }
     assemble {
         dependsOn(shadowJar)
