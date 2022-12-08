@@ -19,7 +19,7 @@ class BlockDataUtils(private val nmsTools: NmsTools) {
         if (isValidBlock(blockState)) {
             val boundingBoxes = nmsTools.boundingBoxes(block, blockState)
             if (boundingBoxes.isNotEmpty()) {
-                shape = ConvexMinecraftShape.new(boundingBoxes)
+                shape = ConvexMinecraftShape.of(boundingBoxes)
             }
         }
         return PhysicsBlockData(block, blockState, shape)

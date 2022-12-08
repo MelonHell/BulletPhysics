@@ -39,11 +39,13 @@ class ConcaveMinecraftShape(private val triangles: List<Triangle>) : MeshCollisi
         }
 
     companion object {
-        fun new(box: BoundingBox): ConcaveMinecraftShape {
+        @JvmStatic
+        fun of(box: BoundingBox): ConcaveMinecraftShape {
             return ConcaveMinecraftShape(Triangle.getMeshOf(box))
         }
 
-        fun new(boxes: Iterable<BoundingBox>): ConcaveMinecraftShape {
+        @JvmStatic
+        fun of(boxes: Iterable<BoundingBox>): ConcaveMinecraftShape {
             val triangles: MutableList<Triangle> = ArrayList()
             for (box in boxes) {
                 triangles.addAll(Triangle.getMeshOf(box))

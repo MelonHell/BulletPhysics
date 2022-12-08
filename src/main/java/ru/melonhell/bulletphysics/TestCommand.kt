@@ -20,7 +20,7 @@ class TestCommand(private val spaceService: SpaceService) : BaseCommand() {
     fun test(player: Player, @Default("1") size: Float, @Default("1") count: Int) {
         for (i in 0 until count) {
             val space = spaceService[player.world]
-            val convex = ConvexMinecraftShape.new(BoundingBox(Vector3f(), size * 0.5f, size * 0.5f, size * 0.5f))
+            val convex = ConvexMinecraftShape.of(BoundingBox(Vector3f(), size * 0.5f, size * 0.5f, size * 0.5f))
             val rigidBody = PhysicsRigidBody(convex, 100f)
             val physicsElement: PhysicsElement = object : PhysicsElement(rigidBody) {
                 override fun updateFrame() {

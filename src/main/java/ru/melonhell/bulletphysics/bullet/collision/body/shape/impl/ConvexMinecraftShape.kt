@@ -23,11 +23,13 @@ class ConvexMinecraftShape(private val triangles: List<Triangle>) : HullCollisio
 
 
     companion object {
-        fun new(box: BoundingBox): ConvexMinecraftShape {
+        @JvmStatic
+        fun of(box: BoundingBox): ConvexMinecraftShape {
             return ConvexMinecraftShape(Triangle.getMeshOf(box))
         }
 
-        fun new(boxes: Iterable<BoundingBox>): ConvexMinecraftShape {
+        @JvmStatic
+        fun of(boxes: Iterable<BoundingBox>): ConvexMinecraftShape {
             val triangles: MutableList<Triangle> = ArrayList()
             for (box in boxes) {
                 triangles.addAll(Triangle.getMeshOf(box))
