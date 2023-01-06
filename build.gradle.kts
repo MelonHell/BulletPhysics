@@ -21,7 +21,7 @@ allprojects {
         maven("https://lazurite.dev/releases")
         maven("https://repo.aikar.co/content/groups/aikar/")
         maven {
-            url = uri("https://nexus.spliterash.ru/repository/all/")
+            url = uri("https://repo.spliterash.ru/all/")
             credentials {
                 username = findProperty("SPLITERASH_NEXUS_USR")?.toString()
                 password = findProperty("SPLITERASH_NEXUS_PSW")?.toString()
@@ -32,7 +32,7 @@ allprojects {
         compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.20")
         compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
         compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.4")
-        compileOnly("ru.spliterash:spring-spigot:1.0.5")
+        compileOnly("ru.spliterash:spring-spigot:1.0.6")
         implementation("com.github.stephengold:Libbulletjme:17.2.0")
     }
 }
@@ -105,7 +105,7 @@ publishing {
     repositories {
         maven {
             name = "nexus"
-            url = uri("https://nexus.spliterash.ru/repository/" + rootProject.name)
+            url = uri("https://repo.spliterash.ru/" + rootProject.name)
             credentials {
                 username = findProperty("SPLITERASH_NEXUS_USR")?.toString()
                 password = findProperty("SPLITERASH_NEXUS_PSW")?.toString()
