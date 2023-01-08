@@ -21,10 +21,11 @@ class Frame(
     private var tickRotation: Quaternion = Quaternion()
 
     init {
-        this[location, location, rotation] = rotation
+
+        set(location, location, rotation, rotation)
     }
 
-    operator fun set(
+    fun set(
         prevLocation: Vector3f,
         tickLocation: Vector3f,
         prevRotation: Quaternion,
@@ -37,11 +38,11 @@ class Frame(
     }
 
     fun from(frame: Frame) {
-        this[frame.prevLocation, frame.tickLocation, frame.prevRotation] = frame.tickRotation
+        set(frame.prevLocation, frame.tickLocation, frame.prevRotation, frame.tickRotation)
     }
 
     fun from(prevFrame: Frame, tickLocation: Vector3f, tickRotation: Quaternion) {
-        this[prevFrame.tickLocation, tickLocation, prevFrame.tickRotation] = tickRotation
+        set(prevFrame.tickLocation, tickLocation, prevFrame.tickRotation, tickRotation)
     }
 
     fun getLocation(store: Vector3f, tickDelta: Float): Vector3f {

@@ -8,7 +8,5 @@ import org.springframework.context.annotation.Bean
 @SpringBootApplication(scanBasePackages = ["ru.melonhell.bulletphysics"])
 open class BulletPhysicsApplication {
     @Bean
-    open fun paperCommandManager(javaPlugin: JavaPlugin?): PaperCommandManager {
-        return PaperCommandManager(javaPlugin)
-    }
+    open fun paperCommandManager(javaPlugin: JavaPlugin): PaperCommandManager = PaperCommandManager(javaPlugin)
 }

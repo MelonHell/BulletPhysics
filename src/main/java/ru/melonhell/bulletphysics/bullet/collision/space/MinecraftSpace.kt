@@ -114,11 +114,12 @@ class MinecraftSpace(
             if (physicsElement != null) {
                 if (!collisionObject.isInWorld) {
                     collisionObject.activate(true)
-                    physicsElement.frame[collisionObject.getPhysicsLocation(Vector3f()), collisionObject.getPhysicsLocation(
-                        Vector3f()
-                    ), collisionObject.getPhysicsRotation(
-                        Quaternion()
-                    )] = collisionObject.getPhysicsRotation(Quaternion())
+                    physicsElement.frame.set(
+                        collisionObject.getPhysicsLocation(Vector3f()),
+                        collisionObject.getPhysicsLocation(Vector3f()),
+                        collisionObject.getPhysicsRotation(Quaternion()),
+                        collisionObject.getPhysicsRotation(Quaternion())
+                    )
                 }
             } else if (collisionObject is TerrainRigidBody) {
                 this.terrainMap[collisionObject.blockPos] = collisionObject
@@ -177,7 +178,7 @@ class MinecraftSpace(
     }
 
     val physicsElements: Collection<PhysicsElement>
-        get() = physicsElementMap.values
+        get() = ArrayList(physicsElementMap.values)
 
     /**
      * Trigger all collision events (e.g. block/element or element/element).

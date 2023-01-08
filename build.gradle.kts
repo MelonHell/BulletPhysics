@@ -33,7 +33,7 @@ allprojects {
         compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
         compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.4")
         compileOnly("ru.spliterash:spring-spigot:1.0.6")
-        implementation("com.github.stephengold:Libbulletjme:17.2.0")
+        implementation("com.github.stephengold:Libbulletjme:17.4.0")
     }
 }
 
