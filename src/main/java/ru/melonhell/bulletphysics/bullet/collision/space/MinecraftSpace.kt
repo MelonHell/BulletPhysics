@@ -19,6 +19,7 @@ import ru.melonhell.bulletphysics.bullet.collision.space.generator.TerrainGenera
 import ru.melonhell.bulletphysics.bullet.thread.PhysicsThread
 import ru.melonhell.bulletphysics.nms.wrappers.BlockPos
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executor
 import java.util.function.Consumer
 
 /**
@@ -40,7 +41,7 @@ class MinecraftSpace(
     private val terrainGenerator: TerrainGenerator,
     private val pressureGenerator: PressureGenerator,
     val world: World
-) : PhysicsSpace(BroadphaseType.DBVT), PhysicsCollisionListener {
+) : PhysicsSpace(BroadphaseType.DBVT), PhysicsCollisionListener, Executor by physicsThread {
     private val terrainMap: MutableMap<BlockPos, TerrainRigidBody>
     private val physicsElementMap: MutableMap<PhysicsCollisionObject, PhysicsElement>
     val blockCache: BlockCache
