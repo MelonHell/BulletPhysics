@@ -4,6 +4,7 @@ import com.jme3.bullet.PhysicsSpace
 import com.jme3.bullet.collision.PhysicsCollisionEvent
 import com.jme3.bullet.collision.PhysicsCollisionListener
 import com.jme3.bullet.collision.PhysicsCollisionObject
+import com.jme3.bullet.objects.PhysicsRigidBody
 import com.jme3.math.Quaternion
 import com.jme3.math.Vector3f
 import org.bukkit.World
@@ -21,6 +22,7 @@ import ru.melonhell.bulletphysics.nms.wrappers.BlockPos
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Consumer
+import java.util.logging.Level
 
 /**
  * This is the main physics simulation used by Rayon. Each bullet simulation update
@@ -201,5 +203,11 @@ class MinecraftSpace(
 //        else if (event.getObjectA() instanceof ElementRigidBody rigidBody && event.getObjectB() instanceof TerrainRigidBody terrain) {
 ////            Bukkit.getPluginManager().callEvent(new BlockCollisionEvent(rigidBody.getElement(), terrain, impulse));
 //        }
+    }
+
+    companion object {
+        init {
+            PhysicsRigidBody.logger2.level = Level.WARNING;
+        }
     }
 }
