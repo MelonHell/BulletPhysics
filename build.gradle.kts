@@ -27,7 +27,7 @@ allprojects {
         compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
         compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.4")
         compileOnly("ru.spliterash:spring-spigot:1.0.6")
-        implementation("com.github.stephengold:Libbulletjme:17.4.0")
+        implementation("com.github.stephengold:Libbulletjme:18.1.0")
     }
 }
 
@@ -45,7 +45,7 @@ bukkit {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
     api(project(":nms"))
 }

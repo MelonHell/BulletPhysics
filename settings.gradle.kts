@@ -7,4 +7,4 @@ pluginManagement {
 
 rootProject.name = "BulletPhysics"
 include("nms")
-include("nms:v1_19_2")
+include("nms:v1_19_4")

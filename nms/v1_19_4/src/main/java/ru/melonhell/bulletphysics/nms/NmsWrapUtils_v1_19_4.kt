@@ -7,7 +7,7 @@ import net.minecraft.world.phys.AABB
 import ru.melonhell.bulletphysics.nms.wrappers.FluidStateWrapper
 
 
-object NmsWrapUtils_v1_19_2 {
+object NmsWrapUtils_v1_19_4 {
     fun convert(aabb: AABB): BoundingBox {
         return BoundingBox(
             Vector3f(aabb.minX.toFloat(), aabb.minY.toFloat(), aabb.minZ.toFloat()),
